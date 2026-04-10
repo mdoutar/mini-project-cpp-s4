@@ -56,8 +56,8 @@ void Game::processEvent(){
                     mainMenu.clickSound.play();
                     currentState= GameState::MENU;
                 }
-                else if( student.canDefense &&event.key.code ==sf::Keyboard::W){
-                    student.defense(defenses ,(5-currentLevel)*10);
+                else if( student.canDefense &&(event.key.code ==sf::Keyboard::E || event.mouseButton.button ==sf::Mouse::Right)){
+                    student.defense(defenses ,float((5-currentLevel)*10));
                 }
                 }
         else if (currentState == GameState::MENU) {
@@ -88,7 +88,7 @@ void Game::processEvent(){
             }
 
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Up) mainMenu.moveUP();
+                if (event.key.code == sf::Keyboard::Up ) mainMenu.moveUP();
                 else if (event.key.code == sf::Keyboard::Down) mainMenu.moveDOWN();
                 else if (event.key.code == sf::Keyboard::Escape) {
                     mainMenu.clickSound.play();
@@ -129,10 +129,10 @@ void Game::resetGame(){
     activeObstacles.clear();
     defenses.clear();
     heals.clear();
-    Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,700.f), -100,false , 0 );
+    Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,700.f), -100.f,false , 0 );
     heals.push_back(heal);
-    int newBossHealth = 100 + (currentLevel * 100);
-    student =Player(sf::Vector2f(100.f, 600.f), 200, 300);
+    int newBossHealth = float(100 + (currentLevel * 100));
+    student =Player(sf::Vector2f(100.f, 600.f), 200.f, 300);
     student.texture.loadFromFile("../assets/textures/Sadness.png");
     student.sprite.setTexture(student.texture);
 

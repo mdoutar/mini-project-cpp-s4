@@ -5,6 +5,7 @@
 #include <math.h>
 #include "Collider.hpp"
 #include "Obstacle.hpp"
+#include "Bar.hpp"
 class Player {
 private:
 
@@ -14,7 +15,7 @@ bool canCrouch;
 bool rightFace;
 float gravity;
 float groundHeight;
-int health;
+float health;
 int speed;
 public:
     bool canDefense;
@@ -26,19 +27,21 @@ public:
     sf::Texture texture;
     sf::Texture deadTex;    
 
-    Player(sf::Vector2f startPosition,int health , int speed);
+    Bar healthBar;
 
-    void update(float deltaTime,sf::Vector2f bossPos);
+    Player(sf::Vector2f startPosition,float health , int speed);
+
+    void update(float deltaTime, sf::Vector2f bossPos);
     void draw(sf::RenderWindow& window);
     
     void onCollision(sf::Vector2f direction);
      Collider getCollider() { return Collider(sprite); }
-    void takeDamage(int damage);
+    void takeDamage(float damage);
     int getHealth();
     sf::Vector2f getPosition() { return sprite.getPosition(); }
-    void reset(sf::Vector2f startPosition, int newHealth, int newSpeed);
+    void reset(sf::Vector2f startPosition, float newHealth, int newSpeed);
     sf::FloatRect getBounds(); 
-    void defense(  std::vector<Obstacle>& defenses, int damage);
+    void defense(  std::vector<Obstacle>& defenses, float damage);
 };
 
 #endif

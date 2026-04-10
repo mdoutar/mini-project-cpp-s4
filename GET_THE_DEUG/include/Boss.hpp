@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Collider.hpp"
 #include "Obstacle.hpp"
+#include "Bar.hpp"
 enum class typeAttack{
     A,
     B
@@ -11,7 +12,7 @@ enum class typeAttack{
 class Boss {
 private:
     sf::Sprite sprite;
-    int health;
+    float health;
     float speed;
     float throwTimer = 0.f;
     float throwInterval = 2.0f;
@@ -24,15 +25,19 @@ private:
     sf::Texture attackBTextureBoss;
     sf::Texture attackATexture;
     sf::Texture attackBTexture;
-    Boss();
-    Boss( sf::Vector2f size, sf::Vector2f startPosition, int startHealth);
+    Bar healthBar;
 
+
+    Boss();
+    Boss( sf::Vector2f size, sf::Vector2f startPosition, float startHealth);
+
+    sf::FloatRect getBounds();
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     bool shouldThrowObstacle();
-     void reset( int newHealth);
-    void takeDamage(int amount);
-    int getHealth();
+     void reset( float newHealth);
+    void takeDamage(float amount);
+    float getHealth();
     sf::Vector2f getPosition();
     void attack(typeAttack type, std::vector<Obstacle>& attackes);
     Collider getCollider() { return Collider(sprite); }
