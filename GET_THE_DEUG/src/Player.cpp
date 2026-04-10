@@ -46,7 +46,7 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
 
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||  sf::Keyboard::isKeyPressed(sf::Keyboard::W)) && canJump) {
         canJump = false;
-        canCrouch =false;
+        // canCrouch =false;
         velocity.y = -sqrtf(2.f  * gravity * 150.f);
     }
 

@@ -220,9 +220,11 @@ void Game::update(){
                 resetGame();
         }
         if(student.canDefense){
-            bgMusic.pause();
+             if(bgMusic.getStatus() == bgMusic.Playing){
+                 bgMusic.pause();
+             }
             fightingMusic.play();
-        }else if(bgMusic.getStatus() == bgMusic.Playing){
+        }else if(fightingMusic.getStatus() == fightingMusic.Playing){
             fightingMusic.pause();
             bgMusic.play();
         }

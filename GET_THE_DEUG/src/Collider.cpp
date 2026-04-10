@@ -37,13 +37,17 @@ bool Collider::checkCollider(Collider &other ,sf::Vector2f& direction,float push
                     other.move( 0.f , -intersectY *  push);
                     direction.x = 0.f;direction.y = 1.f;
             }
-
         }
-        
         return true;
     }
     return false;
 }
+
+sf::Vector2f Collider::getPosition() {
+    sf::FloatRect bounds = spirite.getGlobalBounds();
+    return sf::Vector2f(bounds.left + (bounds.width/2), bounds.top + (bounds.height/2));
+}
+
 sf::Vector2f Collider::getHalfSize() {
     sf::FloatRect bounds = spirite.getGlobalBounds();
     return sf::Vector2f(bounds.width / 2.f, bounds.height / 2.f);
