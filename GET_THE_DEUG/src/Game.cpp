@@ -1,6 +1,8 @@
 #include "../include/Game.hpp"
+
+
 static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f; 
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )  ,background(sf::Vector2f(3000.f,600.f)) ,view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT)), mainMenu(sf::Vector2f(800.f, 400.f)) ,student(sf::Vector2f(100.f, 600.f), 200, 300),boss( sf::Vector2f(100.f,100.f),sf::Vector2f(2950.f,600.f),200 ){
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )  ,background(sf::Vector2f(3000.f,600.f)) , mainMenu(sf::Vector2f(800.f, 400.f)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student(sf::Vector2f(100.f, 600.f), 200, 300),boss( sf::Vector2f(100.f,100.f),sf::Vector2f(2950.f,600.f),200 ){
     window.setFramerateLimit(60);
     if (!healTex.loadFromFile("")) {
         std::cout << "ERROR: Could not heal texture!\n";
@@ -38,7 +40,10 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         } else {
             background.setTexture(&bgTexture);
         }
-}
+
+
+        // background.scale(window.getSize());
+    }
 
 
 void Game::processEvent(){
@@ -129,13 +134,12 @@ void Game::resetGame(){
     activeObstacles.clear();
     defenses.clear();
     heals.clear();
-    Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,700.f), -100.f,false , 0 );
+    Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,background.getPosition().x), -200.f,false , 0 );
     heals.push_back(heal);
     int newBossHealth = float(100 + (currentLevel * 100));
     student =Player(sf::Vector2f(100.f, 600.f), 200.f, 300);
     student.texture.loadFromFile("../assets/textures/Sadness.png");
     student.sprite.setTexture(student.texture);
-
     // boss = Boss(sf::Vector2f(100.f,100.f),sf::Vector2f(2950.f,500.f),newBossHealth );
     boss.reset(newBossHealth);
     render();
@@ -209,7 +213,7 @@ void Game::update(){
         if(student.getHealth() <=0){
             currentState = GameState::GAME_OVER;
             gameOverMessage.setString("press enter to restart");
-            gameOverMessage.setPosition(view.view.getCenter().x + 200.f, view.view.getCenter().y + 50.f);
+            gameOverMessage.setPosition(view.view.getCenter().x + 200.f, view.view.getCenter().y + 100.f);
         }
         if(boss.getHealth() <=0){
             currentState = GameState::LEVEL_COMPLETE;
@@ -228,7 +232,10 @@ void Game::update(){
             fightingMusic.pause();
             bgMusic.play();
         }
-        view.setCenter(student.getPosition()); 
+
+        
+        view.setCenter(student.getPosition());
+        view.clampToBounds(background.getSize().x,background.getSize().y);
     }
     if (currentState == GameState::LEVEL_COMPLETE) {
         transitionTimer += deltaTime;
@@ -252,6 +259,9 @@ void Game::render() {
         boss.draw(window);
         for (int i = 0; i < activeObstacles.size(); i++) {
             activeObstacles[i].draw(window);
+        }
+        for (int i = 0; i < heals.size(); i++) {
+            heals[i].draw(window);
         }
         for(int i=0;i<defenses.size();i++){
             defenses[i].draw(window);
