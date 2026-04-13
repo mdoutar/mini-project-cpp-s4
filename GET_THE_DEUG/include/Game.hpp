@@ -14,6 +14,7 @@
 #include "Boss.hpp"
 #include "Obstacle.hpp"
 #include <vector>
+
 enum class GameState {
     MENU,
     PLAYING,
@@ -25,23 +26,27 @@ class Game
 {
 private:
 sf::Font mainFont;
+GameState currentState;
+int currentLevel = 1;
+float deltaTime;
+sf::Clock clock;
+sf::RenderWindow window;
+
 public : 
-    GameState currentState;
+
     
-    int currentLevel = 1;
-    float deltaTime;
     
      std::vector<Obstacle> activeObstacles;
      std::vector<Obstacle> defenses;
      std::vector<Obstacle> heals;
-     
-     sf::Clock clock;
-     sf::RenderWindow window;
+     sf::Texture trapTex;
+     std::vector<std::vector <Obstacle>> traps;
 
+     
      sf::RectangleShape background;
      sf::RectangleShape gameOver;
      sf::RectangleShape gameFinished;
-
+     
      sf::Music bgMusic;
      sf::Music fightingMusic;
      
@@ -52,17 +57,19 @@ public :
     
      sf::Text levelText;
      
-    sf::Texture healTex;
-
-    std::vector<sf::Texture> bgTextures;
-    sf::Texture gameOverTex;
-    sf::Texture gameFinishedTex;
-    
-    float transitionTimer = 0.f;
-
-public:
-    Game();
-    void resetGame();
+     sf::Texture healTex;
+     
+     std::vector<sf::Texture> bgTextures;
+     sf::Texture gameOverTex;
+     sf::Texture gameFinishedTex;
+     
+     float transitionTimer = 0.f;
+     
+     public:
+     
+     
+     Game();
+     void resetGame();
     void update();
     void run();
     void processEvent();

@@ -1,34 +1,40 @@
 #include "../include/Boss.hpp"
 Boss::Boss(){}
 Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
-    idleTexture.loadFromFile("../assets/textures/Smile.png");
-    attackATextureBoss.loadFromFile("../assets/textures/Aggression.png");
-    attackBTextureBoss.loadFromFile("../assets/textures/Special.png");
-    attackATexture.loadFromFile("../assets/textures/Sadness.png");
-    attackBTexture.loadFromFile("../assets/textures/Smile.png");
+    try{
+        
+        if(!idleTexture.loadFromFile("../assets/textures/Smile.png")){
+             std::cout << "ERROR: Could not load idle boss texture!\n";
+        }else{
+            sprite.setTexture(idleTexture);
+        }
 
-    if (idleTexture.getSize().x > 0) {
-        sprite.setTexture(idleTexture);
-    }
+        attackTextureBoss.loadFromFile("../assets/textures/Aggression.png");
 
-    sf::FloatRect bounds = sprite.getLocalBounds();
-    if (bounds.width > 0 && bounds.height > 0) {
-        sprite.setScale(size.x / bounds.width, size.y / bounds.height);
-    }
-
-    sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-
-    health = startHealth;
-    speed = 150.f; 
-    movingUp = true; 
+        attackATexture.loadFromFile("../assets/textures/Sadness.png");
+        attackBTexture.loadFromFile("../assets/textures/Smile.png");
+        
+        sf::FloatRect bounds = sprite.getLocalBounds();
+        if (bounds.width > 0 && bounds.height > 0) {
+            sprite.setScale(size.x / bounds.width, size.y / bounds.height);
+        }
     
+        sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    
+        health = startHealth;
+        speed = 150.f; 
+        movingUp = true; 
 
-
+    }catch(const std::exception& e){
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 
 }
+
 void Boss::setPosition(sf::Vector2f pos){
     sprite.setPosition(pos);
 }
+
 void Boss::update(float deltaTime) {
     throwTimer += deltaTime;
     if (movingUp) {
@@ -47,6 +53,8 @@ void Boss::update(float deltaTime) {
         if (attackAnimTimer > 0.3f) { 
             isAttacking = false;
             sprite.setTexture(idleTexture); 
+        }else{
+            sprite.setTexture(attackTextureBoss);
         }
     }
 
@@ -55,6 +63,7 @@ void Boss::update(float deltaTime) {
     barPosition.y -= getBounds().getSize().y +30.f;
     healthBar.update(getHealth(),barPosition);
 }
+
 bool Boss::shouldThrowObstacle() {
     if (throwTimer >= throwInterval) {
         throwTimer = 0.f;
@@ -62,6 +71,7 @@ bool Boss::shouldThrowObstacle() {
     }
     return false;      
 }
+
 void Boss::reset( float newHealth) {
     health = newHealth;
     movingUp = true;
@@ -81,17 +91,15 @@ void Boss::attack(typeAttack type, std::vector<Obstacle>& attackes ) {
     throwTimer = 0;
     isAttacking = true;
     attackAnimTimer = 0.f;
+    sprite.setTexture(attackTextureBoss);
     if (type == typeAttack::A) {
         if (attackATexture.getSize().x >0 ) {
-            
-            sprite.setTexture(attackATextureBoss);
             Obstacle thrownItem(&attackATexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true,550);
             attackes.push_back(thrownItem);
         }
     }
     else if (type == typeAttack::B) {
         if (attackBTexture.getSize().x>0) {
-            sprite.setTexture(attackATextureBoss);
             Obstacle thrownItem(&attackBTexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true, 600);
             attackes.push_back(thrownItem);
         }        
@@ -101,6 +109,7 @@ void Boss::attack(typeAttack type, std::vector<Obstacle>& attackes ) {
 float Boss::getHealth() {
     return health;
 }
+
 void Boss::takeDamage(float amount){
     health-=amount;
     if (health<=0.f){
@@ -108,6 +117,7 @@ void Boss::takeDamage(float amount){
     }
     healthBar.setHealth(health);
 }
+
 sf::Vector2f Boss::getPosition() {
     return sprite.getPosition();
 }

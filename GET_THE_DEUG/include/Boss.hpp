@@ -21,8 +21,7 @@ private:
     public:
     bool isAttacking = false;
     sf::Texture idleTexture;
-    sf::Texture attackATextureBoss;
-    sf::Texture attackBTextureBoss;
+    sf::Texture attackTextureBoss;
     sf::Texture attackATexture;
     sf::Texture attackBTexture;
     Bar healthBar;

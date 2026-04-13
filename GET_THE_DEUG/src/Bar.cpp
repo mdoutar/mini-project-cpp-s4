@@ -24,9 +24,7 @@ void Bar::update(float currHealth, sf::Vector2f position) {
     
     bar.setPosition(position);
     health.setPosition(position);
-    
-
-    bar.setSize(size);  
+     
 }
 
 void Bar::setMaxHealth(float maxHealth) {

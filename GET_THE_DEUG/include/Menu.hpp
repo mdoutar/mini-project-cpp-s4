@@ -4,15 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 static const int MAXSIZE = 3;
-static std::string MenuOptions[MAXSIZE] = {
-    "Play",
-    "Restart",
-    "Quit",
-};
+
 
 class Menu
 {
 private:
+    std::string MenuOptions[MAXSIZE];
     int curSelected ; 
     
     sf::Texture btnTex;

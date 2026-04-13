@@ -7,6 +7,7 @@
 #include "Obstacle.hpp"
 #include "Bar.hpp"
 #include "Animations.hpp"
+
 class Player {
 private:
 
