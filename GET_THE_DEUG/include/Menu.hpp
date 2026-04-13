@@ -3,10 +3,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-static const int MAXSIZE = 4;
+static const int MAXSIZE = 3;
 static std::string MenuOptions[MAXSIZE] = {
     "Play",
-    "Levels",
     "Restart",
     "Quit",
 };
@@ -16,17 +15,20 @@ class Menu
 private:
     int curSelected ; 
     
-    sf::RectangleShape menuBg;
     sf::Texture btnTex;
     
     sf::SoundBuffer clickBuffer;
     sf::Text text_menu[MAXSIZE];
     
-    public:
+        sf::RectangleShape menuBg;
+        public:
+        sf::Texture menuTex;
     sf::Sound clickSound;
     sf::RectangleShape buttons[MAXSIZE];
     sf::Font font;  
 
+
+    
 public:
     Menu(sf::Vector2f size); 
     int getMenuPressed(){

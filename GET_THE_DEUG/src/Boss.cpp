@@ -1,15 +1,12 @@
 #include "../include/Boss.hpp"
 Boss::Boss(){}
-Boss::Boss( sf::Vector2f size, sf::Vector2f startPosition, float startHealth):healthBar(startHealth, sf::Vector2f(100.f, 10.f)) {
-idleTexture.loadFromFile("../assets/textures/Smile.png");
-attackATextureBoss.loadFromFile("../assets/textures/Aggression.png");
-attackBTextureBoss.loadFromFile("../assets/textures/Special.png");
-attackATexture.loadFromFile("../assets/textures/Sadness.png");
-attackBTexture.loadFromFile("../assets/textures/Smile.png");
+Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
+    idleTexture.loadFromFile("../assets/textures/Smile.png");
+    attackATextureBoss.loadFromFile("../assets/textures/Aggression.png");
+    attackBTextureBoss.loadFromFile("../assets/textures/Special.png");
+    attackATexture.loadFromFile("../assets/textures/Sadness.png");
+    attackBTexture.loadFromFile("../assets/textures/Smile.png");
 
-    if (idleTexture.getSize().x > 0) {
-        sprite.setTexture(idleTexture);
-    }
     if (idleTexture.getSize().x > 0) {
         sprite.setTexture(idleTexture);
     }
@@ -20,30 +17,28 @@ attackBTexture.loadFromFile("../assets/textures/Smile.png");
     }
 
     sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-    sprite.setPosition(startPosition);
 
     health = startHealth;
     speed = 150.f; 
     movingUp = true; 
     
-    sf::Vector2f barPosition = startPosition ;
-    barPosition.x -= getBounds().width / 2  ; 
-    barPosition.y -= getBounds().getSize().y +30.f;
-    healthBar.update(health,barPosition);
+
 
 
 }
-
+void Boss::setPosition(sf::Vector2f pos){
+    sprite.setPosition(pos);
+}
 void Boss::update(float deltaTime) {
     throwTimer += deltaTime;
     if (movingUp) {
         sprite.move(0.f, -speed * deltaTime);
-        if (sprite.getPosition().y < 250.f) { 
+        if (sprite.getPosition().y < 350.f) { 
             movingUp = false;
         }
     } else {
         sprite.move(0.f, speed * deltaTime);
-        if (sprite.getPosition().y > 550.f) {
+        if (sprite.getPosition().y > 450.f) {
             movingUp = true;  
         }
     }
@@ -90,14 +85,14 @@ void Boss::attack(typeAttack type, std::vector<Obstacle>& attackes ) {
         if (attackATexture.getSize().x >0 ) {
             
             sprite.setTexture(attackATextureBoss);
-            Obstacle thrownItem(&attackATexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true, 500);
+            Obstacle thrownItem(&attackATexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true,550);
             attackes.push_back(thrownItem);
         }
     }
     else if (type == typeAttack::B) {
         if (attackBTexture.getSize().x>0) {
-            sprite.setTexture(attackBTextureBoss);
-            Obstacle thrownItem(&attackBTexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true, 500);
+            sprite.setTexture(attackATextureBoss);
+            Obstacle thrownItem(&attackBTexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true, 600);
             attackes.push_back(thrownItem);
         }        
     }

@@ -2,6 +2,8 @@
 #define GAME_H
 
 #include <iostream>
+#include <vector>
+
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -16,32 +18,46 @@ enum class GameState {
     MENU,
     PLAYING,
     GAME_OVER,
-    LEVEL_COMPLETE
+    LEVEL_COMPLETE,
+    GET_DEUG
 };
 class Game
 {
 private:
 sf::Font mainFont;
 public : 
-    int currentLevel = 1;
     GameState currentState;
+    
+    int currentLevel = 1;
     float deltaTime;
-    std::vector<Obstacle> activeObstacles;
+    
+     std::vector<Obstacle> activeObstacles;
      std::vector<Obstacle> defenses;
      std::vector<Obstacle> heals;
-     sf::Texture healTex;
-    sf::Clock clock;
-    sf::RenderWindow window;
-    sf::RectangleShape background;
-    sf::Texture bgTexture;
-    sf::Music bgMusic;
-    sf::Music fightingMusic;
-    ContView view;
-    Menu mainMenu;
-    Player student;
-    Boss boss;
-    sf::Text levelText;
-    sf::Text gameOverMessage;
+     
+     sf::Clock clock;
+     sf::RenderWindow window;
+
+     sf::RectangleShape background;
+     sf::RectangleShape gameOver;
+     sf::RectangleShape gameFinished;
+
+     sf::Music bgMusic;
+     sf::Music fightingMusic;
+     
+     ContView view;
+     Menu mainMenu;
+     Player student;
+     Boss boss;
+    
+     sf::Text levelText;
+     
+    sf::Texture healTex;
+
+    std::vector<sf::Texture> bgTextures;
+    sf::Texture gameOverTex;
+    sf::Texture gameFinishedTex;
+    
     float transitionTimer = 0.f;
 
 public:

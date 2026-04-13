@@ -2,7 +2,7 @@
 
 
 static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f; 
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )  ,background(sf::Vector2f(3000.f,600.f)) , mainMenu(sf::Vector2f(800.f, 400.f)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student(sf::Vector2f(100.f, 600.f), 200, 300),boss( sf::Vector2f(100.f,100.f),sf::Vector2f(2950.f,600.f),200 ){
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )  ,background() , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( sf::Vector2f(100.f,100.f),200 ){
     window.setFramerateLimit(60);
     if (!healTex.loadFromFile("")) {
         std::cout << "ERROR: Could not heal texture!\n";
@@ -17,9 +17,6 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         levelText.setCharacterSize(40);
         levelText.setFillColor(sf::Color::Green);
 
-        gameOverMessage.setCharacterSize(40);
-        gameOverMessage.setFont(mainFont);
-        gameOverMessage.setFillColor(sf::Color::Red);
     }    
         if (  !bgMusic.openFromFile("../assets/background_theme.ogg") ) {
             std::cout << "ERROR: Could not load background music!\n";
@@ -34,15 +31,33 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
             fightingMusic.setLoop(true);
             fightingMusic.setVolume(50.f);
         }
+    if(!gameOverTex.loadFromFile("../assets/textures/game-over.png")){}else{
+        gameOver.setTexture(&gameOverTex);
+        gameOver.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
+    }
+    bgTextures.resize(4);
+    for (int i = 0; i < 4; i++) {
+        if (!bgTextures[i].loadFromFile("../assets/textures/School S" + std::to_string(i + 1) + ".png")) {
+            std::cout << "ERROR: Could not load background texture " << (i + 1) << "!\n";
+        } 
+    }
     
-    if (!bgTexture.loadFromFile("../assets/orig.png")) {
-            std::cout << "ERROR: Could not load background texture!\n";
-        } else {
-            background.setTexture(&bgTexture);
-        }
+    if(!gameFinishedTex.loadFromFile("../assets/textures/finished.png") ){
+        std::cout << "ERROR: Could not load win texture " << std::endl;
+    }else{
+        gameFinished.setTexture(&gameFinishedTex);
+        gameFinished.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
+    }
+
+    background.setTexture(&bgTextures[0]);
+    background.setSize(sf::Vector2f(bgTextures[0].getSize().x, window.getSize().y));
+        student.groundHeight = 450.f;
+        student.setPosition(sf::Vector2f(100.f, student.groundHeight));
+        student.earthWidth = background.getLocalBounds().width;
+
+        boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
 
 
-        // background.scale(window.getSize());
     }
 
 
@@ -66,13 +81,16 @@ void Game::processEvent(){
                 }
                 }
         else if (currentState == GameState::MENU) {
+            
             if (event.type == sf::Event::MouseMoved) {
+                mainMenu.clickSound.play();
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 mainMenu.handleHover(mousePos);
                 break;
             }
 
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                mainMenu.clickSound.play();
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 int clickedItem = mainMenu.checkMouseClick(mousePos);
                 
@@ -82,38 +100,44 @@ void Game::processEvent(){
 
                 if (clickedItem == 0) { 
                     currentState = GameState::PLAYING;
-                } else if(clickedItem ==2){
+                } else if(clickedItem ==1){
                     resetGame();
                     currentState = GameState::PLAYING;
                 }
-                else if (clickedItem == 3) { 
+                else if (clickedItem == 2) { 
                     window.close();
                 }
                 break;
             }
 
             if (event.type == sf::Event::KeyPressed) {
+                mainMenu.clickSound.play();
                 if (event.key.code == sf::Keyboard::Up ) mainMenu.moveUP();
                 else if (event.key.code == sf::Keyboard::Down) mainMenu.moveDOWN();
                 else if (event.key.code == sf::Keyboard::Escape) {
-                    mainMenu.clickSound.play();
-                    window.close();
+                    // currentState = GameState::PLAYING;
+                    break;
                 }
                 else if (event.key.code == sf::Keyboard::Enter) {
-                    mainMenu.clickSound.play();
                     int selected = mainMenu.getMenuPressed();
                     if(selected==0 ){
                         currentState = GameState::PLAYING;
                     }
-                    else if (selected == 2) {
+                    else if (selected == 1) {
                         resetGame();
                         currentState = GameState::PLAYING;
                     }
-                    else if (selected == 3) window.close();
+                    else if (selected == 2) window.close();
                 }
             }
         }
+        else if (currentState==GameState::GET_DEUG&& event.key.code == sf::Keyboard::Escape) {
+            mainMenu.clickSound.play();
+                    resetGame();
+                    currentState = GameState::MENU;
+                }
         else if (currentState == GameState::GAME_OVER) {
+            mainMenu.clickSound.play();
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Enter) {
                     resetGame();
@@ -137,10 +161,9 @@ void Game::resetGame(){
     Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,background.getPosition().x), -200.f,false , 0 );
     heals.push_back(heal);
     int newBossHealth = float(100 + (currentLevel * 100));
-    student =Player(sf::Vector2f(100.f, 600.f), 200.f, 300);
-    student.texture.loadFromFile("../assets/textures/Sadness.png");
-    student.sprite.setTexture(student.texture);
-    // boss = Boss(sf::Vector2f(100.f,100.f),sf::Vector2f(2950.f,500.f),newBossHealth );
+    student.reset(200.f,300);
+    student.setPosition(sf::Vector2f(100.f, student.groundHeight));
+    boss.healthBar.setMaxHealth(newBossHealth);
     boss.reset(newBossHealth);
     render();
 };  
@@ -157,6 +180,7 @@ while (window.isOpen()) {
 }
 void Game::update(){
  if (currentState == GameState::PLAYING) {
+
         Collider bossCol = boss.getCollider();
         sf::Vector2f direction;
         student.update(deltaTime,boss.getPosition());
@@ -175,7 +199,7 @@ void Game::update(){
             }
         }
         if(boss.shouldThrowObstacle()){
-            boss.attack(typeAttack::A , activeObstacles );
+            boss.attack(currentLevel<=2?typeAttack::A :typeAttack::B, activeObstacles );
         }
         for (int i=0 ;i< activeObstacles.size();){
             activeObstacles.at(i).update(deltaTime);
@@ -183,7 +207,7 @@ void Game::update(){
             Collider obstCol = activeObstacles[i].getCollider();
             if (!activeObstacles[i].isDestroyed && studentCol.checkCollider(obstCol, direction, 0.0f)) {
                 activeObstacles[i].destroyObstacle();
-                student.takeDamage(activeObstacles[i].damage);
+                student.takeDamage(activeObstacles[i].damage*currentLevel+10);
                 
             }else if (activeObstacles[i].isDestroyed) {
                 activeObstacles.erase(activeObstacles.begin() + i);
@@ -206,41 +230,43 @@ void Game::update(){
         }
         if(student.getCollider().checkCollider(  bossCol,direction,0.f)){
             if (direction.y == 1.f || direction.y == -1.f ) {
-                boss.movingUp = false;
                 student.takeDamage(10);
             } 
         }
         if(student.getHealth() <=0){
+            currentLevel =1;
             currentState = GameState::GAME_OVER;
-            gameOverMessage.setString("press enter to restart");
-            gameOverMessage.setPosition(view.view.getCenter().x + 200.f, view.view.getCenter().y + 100.f);
         }
         if(boss.getHealth() <=0){
             currentState = GameState::LEVEL_COMPLETE;
             transitionTimer = 0.f;
             levelText.setString("Level " + std::to_string(currentLevel) + " Complete!\nLoading Level " + std::to_string(currentLevel + 1) + "...");
-            levelText.setPosition(view.view.getCenter().x + 200.f, view.view.getCenter().y + 50.f);
-                currentLevel++;
+            currentLevel++;
+            levelText.setPosition(250.f, 250.f);
+                if (currentLevel <= 4) {
+                background.setTexture(&bgTextures[currentLevel-1]);
                 resetGame();
+            } else {
+                currentState = GameState::GET_DEUG;
+            }
         }
-        if(student.canDefense){
-             if(bgMusic.getStatus() == bgMusic.Playing){
-                 bgMusic.pause();
-             }
-            fightingMusic.play();
-        }else if(fightingMusic.getStatus() == fightingMusic.Playing){
-            fightingMusic.pause();
-            bgMusic.play();
-        }
+        // if(student.canDefense){
+        //      if(bgMusic.getStatus() == bgMusic.Playing){
+        //          bgMusic.pause();
+        //      }
+        //     fightingMusic.play();
+        // }else if(fightingMusic.getStatus() == fightingMusic.Playing){
+        //     fightingMusic.pause();
+        //     bgMusic.play();
+        // }
 
         
         view.setCenter(student.getPosition());
-        view.clampToBounds(background.getSize().x,background.getSize().y);
+        view.clampToBounds(background.getGlobalBounds().width,background.getGlobalBounds().height);
     }
     if (currentState == GameState::LEVEL_COMPLETE) {
         transitionTimer += deltaTime;
         if (transitionTimer > 3.0f) { 
-            currentLevel++;
             resetGame();
             currentState = GameState::PLAYING;
         }
@@ -248,13 +274,14 @@ void Game::update(){
 }
 void Game::render() {
     window.clear(sf::Color::Black);
-    window.draw(background); 
     if (currentState == GameState::MENU) {
+        window.setView(window.getDefaultView());
+        
         mainMenu.draw(window);
-         window.setView(window.getDefaultView());
     } 
     else if (currentState == GameState::PLAYING) {
         window.setView(view.view); 
+        window.draw(background);
         student.draw(window);
         boss.draw(window);
         for (int i = 0; i < activeObstacles.size(); i++) {
@@ -268,7 +295,7 @@ void Game::render() {
         }
     }
     else if (currentState == GameState::LEVEL_COMPLETE) {
-        window.clear(sf::Color::Black);
+        window.clear(sf::Color::Yellow);
         window.setView(window.getDefaultView());
         window.draw(levelText);
     }
@@ -276,7 +303,13 @@ void Game::render() {
         GameState::GAME_OVER){
             window.clear(sf::Color::Black);
             window.setView(window.getDefaultView());
-            window.draw(gameOverMessage);
+            window.draw(gameOver);
+        }
+        else if(currentState == GameState::GET_DEUG){
+            window.clear(sf::Color::Black);
+            window.setView(window.getDefaultView());
+            window.draw(gameFinished);
+            printf("%d",12);
         }
 
     window.display();

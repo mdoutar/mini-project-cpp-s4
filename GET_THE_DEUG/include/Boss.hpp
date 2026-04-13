@@ -15,11 +15,11 @@ private:
     float health;
     float speed;
     float throwTimer = 0.f;
-    float throwInterval = 2.0f;
-    public:
+    float throwInterval = 1.5f;
     bool movingUp;
-    bool isAttacking = false;
     float attackAnimTimer = 0.f;
+    public:
+    bool isAttacking = false;
     sf::Texture idleTexture;
     sf::Texture attackATextureBoss;
     sf::Texture attackBTextureBoss;
@@ -29,7 +29,7 @@ private:
 
 
     Boss();
-    Boss( sf::Vector2f size, sf::Vector2f startPosition, float startHealth);
+    Boss( sf::Vector2f size, float startHealth);
 
     sf::FloatRect getBounds();
     void update(float deltaTime);
@@ -38,6 +38,7 @@ private:
      void reset( float newHealth);
     void takeDamage(float amount);
     float getHealth();
+    void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
     void attack(typeAttack type, std::vector<Obstacle>& attackes);
     Collider getCollider() { return Collider(sprite); }

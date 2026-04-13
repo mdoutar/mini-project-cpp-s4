@@ -9,9 +9,10 @@ class Bar{
         float maxHealth;
     public:
     Bar();
-        Bar( float maxHealth,sf::Vector2f size );
+        Bar( float maxHealth );
         void setHealth(float currHealth);
         void update( float currHealth, sf::Vector2f position);
         void draw(sf::RenderWindow& window);
+        void setMaxHealth(float maxHealth);
 };
 #endif
