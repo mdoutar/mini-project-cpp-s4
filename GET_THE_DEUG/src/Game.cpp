@@ -203,10 +203,10 @@ void Game::resetGame(){
     defenses.clear();
     heals.clear();
 
-
-    Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,background.getPosition().x), -200.f,false , 0 );
+    float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+    Obstacle heal(&healTex,sf::Vector2f(50.f,50.f),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
     heals.push_back(heal);
-
+    std::cout << healTex.getSize().y;
 
     int newBossHealth = float(100 + (currentLevel * 100));
     boss.healthBar.setMaxHealth(newBossHealth);
@@ -322,8 +322,6 @@ void Game::update(){
             currentLevel++;
             levelText.setPosition(250.f, 250.f);
                 if (currentLevel <= 4) {
-                // background.setTexture(&bgTextures[currentLevel-1]);
-                // background.setSize(sf::Vector2f(bgTextures[currentLevel-1].getSize().x, window.getSize().y));
                 resetGame();
             } else {
                 currentState = GameState::GET_DEUG;
@@ -342,6 +340,10 @@ void Game::update(){
         
         view.setCenter(student.getPosition());
         view.clampToBounds(background.getGlobalBounds().width,background.getGlobalBounds().height);
+    }
+
+    if(currentState ==GameState::MENU){
+        mainMenu.update();
     }
 
     if (currentState == GameState::LEVEL_COMPLETE) {

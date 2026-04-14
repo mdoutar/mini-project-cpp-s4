@@ -43,6 +43,49 @@ void Player::reset( float newHealth, int newSpeed) {
     healthBar.update(newHealth,barPosition);
 }
 
+
+// void Player::onCollision(sf::Vector2f direction){
+//     if(direction.x !=0.f){
+//         velocity.x =0.f;
+//     }
+//     if(direction.y>0.f){
+//         velocity.y =0.f;
+//     }
+//     else if(direction.y <0.f){
+//         velocity.y =0.f;
+//         canJump=true;
+//         canCrouch=true;
+//     }
+// }
+    
+void Player::takeDamage(float damage) {
+    health -= damage;
+    if (health < 0) {
+        health = 0; 
+        // sprite.setTexture(deadTex);
+        
+    }
+    if(health >200){
+        health =200;
+    }
+    healthBar.setHealth(health);
+}
+void Player::defense( std::vector<Obstacle>& defenses , float damage ){
+    if(canDefense){
+        sf::Vector2f position = sprite.getPosition();
+        Obstacle _defense(&defenseTexture,sf::Vector2f(50.f,50.f),position,1000.f,true,rightFace?-1000:1000);
+        defenses.push_back(_defense);
+        throwTimer = 0.f;
+        canDefense =false;
+    }
+}
+int Player::getHealth() {
+    return health;
+}
+sf::FloatRect Player::getBounds() {
+    return sprite.getGlobalBounds(); 
+}
+
 void Player::update(float deltaTime, sf::Vector2f bossPos){
     velocity.x =0.f;
     float distanceBtwBoss = bossPos.x -getPosition().x;
@@ -111,45 +154,4 @@ void Player::draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
     healthBar.draw(window );
-}
-// void Player::onCollision(sf::Vector2f direction){
-//     if(direction.x !=0.f){
-//         velocity.x =0.f;
-//     }
-//     if(direction.y>0.f){
-//         velocity.y =0.f;
-//     }
-//     else if(direction.y <0.f){
-//         velocity.y =0.f;
-//         canJump=true;
-//         canCrouch=true;
-//     }
-// }
-    
-void Player::takeDamage(float damage) {
-    health -= damage;
-    if (health < 0) {
-        health = 0; 
-        // sprite.setTexture(deadTex);
-        
-    }
-    if(health >200){
-        health =200;
-    }
-    healthBar.setHealth(health);
-}
-void Player::defense( std::vector<Obstacle>& defenses , float damage ){
-    if(canDefense){
-        sf::Vector2f position = sprite.getPosition();
-        Obstacle _defense(&defenseTexture,sf::Vector2f(50.f,50.f),position,1000.f,true,rightFace?-1000:1000);
-        defenses.push_back(_defense);
-        throwTimer = 0.f;
-        canDefense =false;
-    }
-}
-int Player::getHealth() {
-    return health;
-}
-sf::FloatRect Player::getBounds() {
-    return sprite.getGlobalBounds(); 
 }

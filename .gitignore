@@ -1,0 +1,46 @@
+# ---------------------------------------------------
+# CMake & Build Directories
+# ---------------------------------------------------
+# This is the most important one! It stops Git from 
+# uploading all the heavy SFML files and compiled code.
+build/
+out/
+bin/
+
+# ---------------------------------------------------
+# Compiled Binaries & Object Files
+# ---------------------------------------------------
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# ---------------------------------------------------
+# CMake Generated Files
+# (Just in case you accidentally configure outside the build folder)
+# ---------------------------------------------------
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# ---------------------------------------------------
+# IDE & Editor Folders
+# ---------------------------------------------------
+# Ignores personal VS Code settings and cache
+.vscode/
+.cache/
+.idea/
+
+# ---------------------------------------------------
+# OS Specific Files
+# ---------------------------------------------------
+.DS_Store
+Thumbs.db

@@ -20,6 +20,8 @@ private:
         sf::RectangleShape menuBg;
         
         sf::Clock pulseClock;
+        void focus();
+        void removeFocus();
         
         public:
         sf::Texture menuTex;
@@ -36,10 +38,9 @@ public:
     }
     int checkMouseClick(sf::Vector2f mousePos);
     void handleHover(sf::Vector2f mousePos);
-    void draw(sf::RenderWindow& window);
     void moveUP();
     void moveDOWN();
-    void focus();
-    void removeFocus();
+    void update();
+    void draw(sf::RenderWindow& window);
 };
 #endif

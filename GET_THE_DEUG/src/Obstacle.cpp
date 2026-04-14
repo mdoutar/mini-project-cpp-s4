@@ -9,7 +9,7 @@ Obstacle::Obstacle(sf::Texture* texture, sf::Vector2f size, sf::Vector2f positio
     }
     sf::FloatRect bounds = obstacle.getLocalBounds();
     if ((bounds.width > 0 && bounds.height > 0) || bounds.width != size.x || bounds.height !=size.y) {
-        obstacle.scale(size.x / bounds.width, size.y / bounds.height);
+        obstacle.setScale(size.x / bounds.width, size.y / bounds.height);
         
     }
     

@@ -52,35 +52,6 @@ void Boss::setPosition(sf::Vector2f pos){
     sprite.setPosition(pos);
 }
 
-void Boss::update(float deltaTime) {
-    throwTimer += deltaTime;
-    if (movingUp) {
-        sprite.move(0.f, -speed * deltaTime);
-        if (sprite.getPosition().y < 350.f) { 
-            movingUp = false;
-        }
-    } else {
-        sprite.move(0.f, speed * deltaTime);
-        if (sprite.getPosition().y > 450.f) {
-            movingUp = true;  
-        }
-    }
-    if (isAttacking) {
-        attackAnimTimer += deltaTime;
-        if (attackAnimTimer > 0.3f) { 
-            isAttacking = false;
-            sprite.setTexture(idleTexture); 
-        }else{
-            sprite.setTexture(attackTextureBoss);
-        }
-    }
-
-    sf::Vector2f barPosition = getPosition() ;
-    barPosition.x -= getBounds().width / 2  ; 
-    barPosition.y -= getBounds().getSize().y +30.f;
-    healthBar.update(getHealth(),barPosition);
-}
-
 bool Boss::shouldThrowObstacle() {
     if (throwTimer >= throwInterval) {
         throwTimer = 0.f;
@@ -93,10 +64,7 @@ void Boss::reset( float newHealth) {
     health = newHealth;
     movingUp = true;
 }
-void Boss::draw(sf::RenderWindow& window) {
-    window.draw(sprite);
-    healthBar.draw(window);
-}
+
 sf::FloatRect Boss::getBounds() {
     return sprite.getGlobalBounds(); 
 }
@@ -132,4 +100,39 @@ void Boss::takeDamage(float amount){
 
 sf::Vector2f Boss::getPosition() {
     return sprite.getPosition();
+}
+
+
+void Boss::update(float deltaTime) {
+    throwTimer += deltaTime;
+    if (movingUp) {
+        sprite.move(0.f, -speed * deltaTime);
+        if (sprite.getPosition().y < 350.f) { 
+            movingUp = false;
+        }
+    } else {
+        sprite.move(0.f, speed * deltaTime);
+        if (sprite.getPosition().y > 450.f) {
+            movingUp = true;  
+        }
+    }
+    if (isAttacking) {
+        attackAnimTimer += deltaTime;
+        if (attackAnimTimer > 0.3f) { 
+            isAttacking = false;
+            sprite.setTexture(idleTexture); 
+        }else{
+            sprite.setTexture(attackTextureBoss);
+        }
+    }
+
+    sf::Vector2f barPosition = getPosition() ;
+    barPosition.x -= getBounds().width / 2  ; 
+    barPosition.y -= getBounds().getSize().y +30.f;
+    healthBar.update(getHealth(),barPosition);
+}
+
+void Boss::draw(sf::RenderWindow& window) {
+    window.draw(sprite);
+    healthBar.draw(window);
 }

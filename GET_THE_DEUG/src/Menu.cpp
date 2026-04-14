@@ -108,19 +108,28 @@ void Menu::moveDOWN(){
         }
         focus();
 }
-void Menu::draw(sf::RenderWindow & window){
-    
-    window.draw(menuBg);
+
+void Menu::update(){
 
     float time = pulseClock.getElapsedTime().asSeconds();
     float pulseScale = 1.0f + 0.15f * std::sin(time * 5.0f);
-   for (int i = 0; i < MAXSIZE; i++) {
-        window.draw(buttons[i]);
+    for(int i(0); i< MAXSIZE;i++){
+
         if (i == curSelected) {
             text_menu[i].setScale(pulseScale, pulseScale);
         } else {
             text_menu[i].setScale(1.0f, 1.0f);
         }
+    }
+
+} 
+
+void Menu::draw(sf::RenderWindow & window){
+    
+    window.draw(menuBg);
+    for (int i = 0; i < MAXSIZE; i++) {
+         window.draw(buttons[i]);
+
         window.draw(text_menu[i]);
     }
 }
