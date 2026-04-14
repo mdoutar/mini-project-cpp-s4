@@ -12,7 +12,6 @@ class Player {
 private:
 
 sf::Vector2f velocity;
-bool canJump;
 bool canCrouch;
 bool rightFace;
 float gravity;
@@ -25,6 +24,7 @@ Animation animation;
 Bar healthBar;
 
 bool canDefense;
+bool canJump;
     int row;
     float throwTimer = 0.f;
     float throwInterval = .7f;

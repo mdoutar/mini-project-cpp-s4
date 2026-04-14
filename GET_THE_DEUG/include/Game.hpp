@@ -36,11 +36,14 @@ public :
 
     
     
-     std::vector<Obstacle> activeObstacles;
-     std::vector<Obstacle> defenses;
-     std::vector<Obstacle> heals;
-     sf::Texture trapTex;
-     std::vector<std::vector <Obstacle>> traps;
+    std::vector<Obstacle> defenses;
+    std::vector<Obstacle> heals;
+
+    std::vector<std::vector <sf::Texture>> obstaclesTex;
+    std::vector<std::vector <Obstacle>> obstacles;
+
+    
+    std::vector<Obstacle> bossAttackes;
 
      
      sf::RectangleShape background;

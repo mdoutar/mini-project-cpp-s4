@@ -44,7 +44,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     }
     bgTextures.resize(4);
     for (int i = 0; i < 4; i++) {
-        if (!bgTextures[i].loadFromFile("../assets/textures/School S" + std::to_string(i + 1) + ".png")) {
+        if (!bgTextures[i].loadFromFile("../assets/textures/levelBackgrounds/School S" + std::to_string(i + 1) + ".png")) {
             std::cout << "ERROR: Could not load background texture " << (i + 1) << "!\n";
         } 
     }
@@ -58,7 +58,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         gameFinished.setTexture(&gameFinishedTex);
         gameFinished.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
     }
-    traps.resize(4);
+    obstacles.resize(4);
 
     
 
@@ -67,23 +67,31 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         student.earthWidth = background.getLocalBounds().width;
 
         boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
-        srand(static_cast<unsigned>(time(NULL)));
-        for(int r =0;r<4;r++){
-            for(int c=0;c< 7;c++){
-                // temp textures
-            if (!trapTex.loadFromFile("../assets/textures/Smile.png")) {
-                std::cout << "Error loading trap texture!\n";
-            }
-                            float randX = rand() % (700 -200 + 1) + 200 ;
+        
 
-                    int maxY = static_cast<int>(student.groundHeight);
-                    int minY = static_cast<int>(student.groundHeight) - 200;
-                    float randY = rand() % (maxY - minY + 1) + minY;
-            Obstacle trap(&trapTex, sf::Vector2f(50.f, 20.f),sf::Vector2f(150.f + c* randX , randY), 10, false, 0);
-            
-            traps[r].push_back(trap);
-        }
-    }
+
+    // not add textures yet
+    //     srand(static_cast<unsigned>(time(NULL)));
+    //     obstaclesTex.resize(4);
+    //     for(int r =0;r<4;r++){
+    //         obstaclesTex[r].resize(6);
+    //         for(int c=0;c< 6;c++){
+    //         if (!obstaclesTex[r][c].loadFromFile("../assets/textures/obstackes/lvl" + std::to_string(r + 1) + "/trap"+std::to_string(c + 1)+  ".png")) {
+    //             // std::cout << "Error loading trap texture!\n";
+    //         }else{
+
+    //             // float randX = rand() % (700 -200 + 1) + 200 ;
+                
+    //             int maxY = static_cast<int>(student.groundHeight);
+    //             int minY = static_cast<int>(student.groundHeight) - 200;
+    //             float randY = rand() % (maxY - minY + 1) + minY;
+                
+    //             Obstacle trap(&obstaclesTex[r][c], sf::Vector2f(80.f,80.f ),sf::Vector2f(250.f + c* 250.f , randY), 0, false, 0);
+                
+    //             obstacles[r].push_back(trap);
+    //         }
+    //     }
+    // }
 
     }
 
@@ -191,9 +199,10 @@ void Game::resetGame(){
 
     background.setTexture(&bgTextures[currentLevel-1]);
 
-    activeObstacles.clear();
+    bossAttackes.clear();
     defenses.clear();
     heals.clear();
+
 
     Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,background.getPosition().x), -200.f,false , 0 );
     heals.push_back(heal);
@@ -243,26 +252,29 @@ void Game::update(){
             }
         }
         
-            int r = currentLevel - 1;
+        //     int r = currentLevel - 1;
 
-            if (r >= 0 && r < traps.size()) {
-            for (int c = 0; c < traps[r].size(); c++) {
-                    Collider trapCol = traps[r][c].getCollider();
-                    if (studentCol.checkCollider(trapCol, direction, 0.f)) {
-                        student.takeDamage(traps[r][c].damage);
-                    }
-                }
-        }
+        //     if (r >= 0 && r < obstacles.size()) {
+        //     for (int c = 0; c < obstacles[r].size(); c++) {
+        //             Collider trapCol = obstacles[r][c].getCollider();
+        //             if (studentCol.checkCollider(trapCol, direction, 0.f)) {
+        //                 student.takeDamage(obstacles[r][c].damage);
+        //                 if(direction.y ==1.f){
+        //                     student.canJump =true;
+        //                 }
+        //             }
+        //         }
+        // }
 
-        for (int i=0 ;i< activeObstacles.size();){
-            activeObstacles.at(i).update(deltaTime);
+        for (int i=0 ;i< bossAttackes.size();){
+            bossAttackes.at(i).update(deltaTime);
             sf::Vector2f direction;
-            Collider obstCol = activeObstacles[i].getCollider();
-            if (!activeObstacles[i].isDestroyed && studentCol.checkCollider(obstCol, direction, 0.0f)) {
-                activeObstacles[i].destroyObstacle();
-                student.takeDamage(activeObstacles[i].damage*currentLevel+10);
-            }else if (activeObstacles[i].isDestroyed) {
-                activeObstacles.erase(activeObstacles.begin() + i);
+            Collider obstCol = bossAttackes[i].getCollider();
+            if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(obstCol, direction, 0.0f)) {
+                bossAttackes[i].destroyObstacle();
+                student.takeDamage(bossAttackes[i].damage*currentLevel+10);
+            }else if (bossAttackes[i].isDestroyed) {
+                bossAttackes.erase(bossAttackes.begin() + i);
             } else {
                 i++; 
             }
@@ -284,7 +296,7 @@ void Game::update(){
         }
 
         if(boss.shouldThrowObstacle()){
-            boss.attack(currentLevel<=2?typeAttack::A :typeAttack::B, activeObstacles );
+            boss.attack(currentLevel, bossAttackes );
         }
 
 
@@ -356,8 +368,8 @@ void Game::render() {
         window.draw(background);
         student.draw(window);
         boss.draw(window);
-        for (int i = 0; i < activeObstacles.size(); i++) {
-            activeObstacles[i].draw(window);
+        for (int i = 0; i < bossAttackes.size(); i++) {
+            bossAttackes[i].draw(window);
         }
         for (int i = 0; i < heals.size(); i++) {
             heals[i].draw(window);
@@ -366,13 +378,13 @@ void Game::render() {
             defenses[i].draw(window);
         }
 
-        int r = currentLevel - 1;
+        // int r = currentLevel - 1;
 
-        if (r >= 0 && r < traps.size()) {
-            for (int i = 0; i < traps[r].size(); i++) {
-                traps[r][i].draw(window);
-            }
-        }
+        // if (r >= 0 && r < obstacles.size()) {
+        //     for (int i = 0; i < obstacles[r].size(); i++) {
+        //         obstacles[r][i].draw(window);
+        //     }
+        // }
 
     }
     else if (currentState == GameState::LEVEL_COMPLETE) {

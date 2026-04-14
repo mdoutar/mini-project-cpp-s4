@@ -6,7 +6,6 @@ class Obstacle
 {
 public :
     sf::Sprite obstacle;
-    sf::Texture * destTex ;
     int damage;
     bool moving;
     int speed;

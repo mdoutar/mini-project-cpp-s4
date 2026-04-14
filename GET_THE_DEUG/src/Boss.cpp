@@ -1,18 +1,24 @@
 #include "../include/Boss.hpp"
+#include <cstdlib> 
+#include <ctime> 
+
 Boss::Boss(){}
 Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
+
+    
     try{
-        
-        if(!idleTexture.loadFromFile("../assets/textures/Smile.png")){
+        srand(static_cast<unsigned>(time(NULL)));
+        if(!idleTexture.loadFromFile("../assets/textures/idleBossTex.png")){
              std::cout << "ERROR: Could not load idle boss texture!\n";
         }else{
             sprite.setTexture(idleTexture);
         }
 
-        attackTextureBoss.loadFromFile("../assets/textures/Aggression.png");
+        if(!attackTextureBoss.loadFromFile("../assets/textures/attackBossTex.png")){
+             std::cout << "ERROR: Could not load boss attacking texture!\n";
+        }
 
-        attackATexture.loadFromFile("../assets/textures/Sadness.png");
-        attackBTexture.loadFromFile("../assets/textures/Smile.png");
+        
         
         sf::FloatRect bounds = sprite.getLocalBounds();
         if (bounds.width > 0 && bounds.height > 0) {
@@ -25,6 +31,17 @@ Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
         speed = 150.f; 
         movingUp = true; 
 
+
+        
+        attackesTex.resize(4);
+        for(int r =0;r<4;r++){
+            attackesTex[r].resize(6);
+            for(int c=0;c< 6;c++){
+            if (!attackesTex[r][c].loadFromFile("../assets/textures/attackes/lvl" + std::to_string(r + 1) + "/trap"+std::to_string(c + 1)+  ".png")) {
+                std::cout << "Error loading trap texture!\n";
+            }
+        }
+    }
     }catch(const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -84,25 +101,21 @@ sf::FloatRect Boss::getBounds() {
     return sprite.getGlobalBounds(); 
 }
 
-void Boss::attack(typeAttack type, std::vector<Obstacle>& attackes ) {
+void Boss::attack(int level, std::vector<Obstacle>& attackes ) {
     sf::Vector2f spawnPos = sprite.getPosition();
     sf::FloatRect bounds = sprite.getLocalBounds();
     spawnPos.x -= bounds.width;
     throwTimer = 0;
     isAttacking = true;
     attackAnimTimer = 0.f;
-    sprite.setTexture(attackTextureBoss);
-    if (type == typeAttack::A) {
-        if (attackATexture.getSize().x >0 ) {
-            Obstacle thrownItem(&attackATexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true,550);
-            attackes.push_back(thrownItem);
-        }
-    }
-    else if (type == typeAttack::B) {
-        if (attackBTexture.getSize().x>0) {
-            Obstacle thrownItem(&attackBTexture, sf::Vector2f(100.f, 100.f), spawnPos ,10.f, true, 600);
-            attackes.push_back(thrownItem);
-        }        
+
+    
+    int randomAttack = rand() % 6 ;
+    std::cout << randomAttack;
+    if(attackesTex[level-1][randomAttack].getSize().x>0){
+
+        Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(80.f, 80.f), spawnPos ,10.f, true,550);
+        attackes.push_back(thrownItem);
     }
 }
 

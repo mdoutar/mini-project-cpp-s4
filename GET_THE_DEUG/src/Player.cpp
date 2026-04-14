@@ -17,7 +17,7 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         row=0;
         animation = Animation(texture, sf::Vector2u(5, 5), 0.1f);
         sprite.setTextureRect(animation.uvRect);
-    
+
         sf::FloatRect bounds = sprite.getLocalBounds();
         sprite.setOrigin(bounds.width / 2.f, bounds.height);
     }catch(const std::exception& e){
@@ -53,21 +53,20 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     }else{ canDefense=false;}
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ) velocity.x -=speed ;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right) )velocity.x +=speed ; 
-    // if( canDefense &&(sf::Keyboard::isKeyPressed(sf::Keyboard::E) || sf::Mouse::isButtonPressed(sf::Mouse::Right))){
-    //                 defense(defenses ,float((5-currentLevel)*10));
-    //             }
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||  sf::Keyboard::isKeyPressed(sf::Keyboard::W)) && canJump) {
         canJump = false;
         canCrouch =false;
         velocity.y = -sqrtf(2.f  * gravity * 150.f);
     }
 
+    float scalePlayer = 1.5f;
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) && canCrouch) {
-        sprite.setScale(rightFace ? 1.f : -1.f, 0.8f);
+        sprite.setScale(rightFace ? scalePlayer : -scalePlayer, 1.f);
     } else {
-        sprite.setScale(rightFace ? 1.f : -1.f, 1.f); 
+        sprite.setScale(rightFace ? scalePlayer : -scalePlayer,scalePlayer); 
     }
     
+
     if(velocity.x==0){
         row = 0;
     }
@@ -113,19 +112,19 @@ void Player::draw(sf::RenderWindow& window)
     window.draw(sprite);
     healthBar.draw(window );
 }
-void Player::onCollision(sf::Vector2f direction){
-    if(direction.x !=0.f){
-        velocity.x =0.f;
-    }
-    if(direction.y>0.f){
-        velocity.y =0.f;
-    }
-    else if(direction.y <0.f){
-        velocity.y =0.f;
-        canJump=true;
-        canCrouch=true;
-    }
-}
+// void Player::onCollision(sf::Vector2f direction){
+//     if(direction.x !=0.f){
+//         velocity.x =0.f;
+//     }
+//     if(direction.y>0.f){
+//         velocity.y =0.f;
+//     }
+//     else if(direction.y <0.f){
+//         velocity.y =0.f;
+//         canJump=true;
+//         canCrouch=true;
+//     }
+// }
     
 void Player::takeDamage(float damage) {
     health -= damage;
@@ -142,7 +141,7 @@ void Player::takeDamage(float damage) {
 void Player::defense( std::vector<Obstacle>& defenses , float damage ){
     if(canDefense){
         sf::Vector2f position = sprite.getPosition();
-        Obstacle _defense(&defenseTexture,sf::Vector2f(50.f,50.f),position,damage,true,rightFace?-550:550);
+        Obstacle _defense(&defenseTexture,sf::Vector2f(50.f,50.f),position,1000.f,true,rightFace?-1000:1000);
         defenses.push_back(_defense);
         throwTimer = 0.f;
         canDefense =false;

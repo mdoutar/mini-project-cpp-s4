@@ -5,13 +5,12 @@
 #include "Collider.hpp"
 #include "Obstacle.hpp"
 #include "Bar.hpp"
-enum class typeAttack{
-    A,
-    B
-};
 class Boss {
 private:
+
+
     sf::Sprite sprite;
+    
     float health;
     float speed;
     float throwTimer = 0.f;
@@ -20,10 +19,11 @@ private:
     float attackAnimTimer = 0.f;
     public:
     bool isAttacking = false;
+
+    std::vector<std::vector <sf::Texture>> attackesTex;
     sf::Texture idleTexture;
     sf::Texture attackTextureBoss;
-    sf::Texture attackATexture;
-    sf::Texture attackBTexture;
+
     Bar healthBar;
 
 
@@ -39,7 +39,7 @@ private:
     float getHealth();
     void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
-    void attack(typeAttack type, std::vector<Obstacle>& attackes);
+    void attack(int level, std::vector<Obstacle>& attackes);
     Collider getCollider() { return Collider(sprite); }
 };
 

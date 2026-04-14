@@ -2,16 +2,17 @@
 
 Obstacle::Obstacle(){}
 Obstacle::Obstacle(sf::Texture* texture, sf::Vector2f size, sf::Vector2f position, int damage, bool moving, int speed) 
-    : damage(damage), moving(moving), speed(speed), destTex(nullptr) 
+    : damage(damage), moving(moving), speed(speed)
 {
     if (texture != nullptr) {
         obstacle.setTexture(*texture);
     }
     sf::FloatRect bounds = obstacle.getLocalBounds();
-    if (bounds.width > 0 && bounds.height > 0) {
+    if ((bounds.width > 0 && bounds.height > 0) || bounds.width != size.x || bounds.height !=size.y) {
         obstacle.scale(size.x / bounds.width, size.y / bounds.height);
-
+        
     }
+    
     obstacle.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
     obstacle.setPosition(position);
     isDestroyed = false;
@@ -30,9 +31,6 @@ void Obstacle::update(float deltaTime){
     }
 }
 void Obstacle::destroyObstacle(){
-    if (destTex != nullptr) {
-        obstacle.setTexture(*destTex);
-    }
     isDestroyed = true;
     moving = false;
 }
