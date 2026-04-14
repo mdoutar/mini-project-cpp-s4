@@ -1,5 +1,6 @@
 #include "../include/Menu.hpp"
 #include <iostream>
+#include <math.h>
 
 Menu::Menu(sf::Vector2f dimension){
 MenuOptions[0] = "Play";
@@ -40,8 +41,14 @@ MenuOptions[0] = "Play";
         text_menu[i].setOutlineColor(sf::Color::Yellow);
         text_menu[i].setOutlineThickness(2.f);
         text_menu[i].setString(MenuOptions[i]);
-        text_menu[i].setPosition(buttons[i].getPosition().x  , buttons[i].getPosition().y );
-        buttons[i].setSize(sf::Vector2f(text_menu[i].getGlobalBounds().width, text_menu[i].getGlobalBounds().height));
+        
+        sf::FloatRect textBounds = text_menu[i].getLocalBounds();
+        text_menu[i].setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
+        
+        text_menu[i].setPosition(
+            buttons[i].getPosition().x + (buttons[i].getSize().x / 2.0f), 
+            buttons[i].getPosition().y + (buttons[i].getSize().y / 2.0f)
+        );;
     }
 
     curSelected = 0;
@@ -103,8 +110,16 @@ void Menu::moveDOWN(){
 void Menu::draw(sf::RenderWindow & window){
     
     window.draw(menuBg);
+
+    float time = pulseClock.getElapsedTime().asSeconds();
+    float pulseScale = 1.0f + 0.15f * std::sin(time * 5.0f);
    for (int i = 0; i < MAXSIZE; i++) {
         window.draw(buttons[i]);
+        if (i == curSelected) {
+            text_menu[i].setScale(pulseScale, pulseScale);
+        } else {
+            text_menu[i].setScale(1.0f, 1.0f);
+        }
         window.draw(text_menu[i]);
     }
 }

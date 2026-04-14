@@ -18,6 +18,9 @@ private:
     sf::Text text_menu[MAXSIZE];
     
         sf::RectangleShape menuBg;
+        
+        sf::Clock pulseClock;
+        
         public:
         sf::Texture menuTex;
     sf::Sound clickSound;
