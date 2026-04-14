@@ -10,7 +10,7 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
             sprite.setTexture(texture);
         }
     
-        if(!    defenseTexture.loadFromFile("../assets/textures/Aggression.png")){
+        if(!    defenseTexture.loadFromFile("../assets/textures/attackes/lvl4/trap3.png")){
                 std::cout << "ERROR: Could not load defense student texture!\n";
         }
         

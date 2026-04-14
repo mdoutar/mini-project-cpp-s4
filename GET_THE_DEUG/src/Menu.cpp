@@ -52,6 +52,7 @@ MenuOptions[0] = "Play";
     }
 
     curSelected = 0;
+    focus();
     
 
 

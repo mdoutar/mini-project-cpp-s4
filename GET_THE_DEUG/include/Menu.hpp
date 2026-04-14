@@ -10,7 +10,7 @@ class Menu
 {
 private:
     std::string MenuOptions[MAXSIZE];
-    int curSelected ; 
+    int curSelected =0 ; 
     
     sf::Texture btnTex;
     

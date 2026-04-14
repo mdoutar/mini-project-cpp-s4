@@ -6,17 +6,9 @@ static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f;
 
 
 
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )  ,background() , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( sf::Vector2f(100.f,100.f),200 ){
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( sf::Vector2f(100.f,100.f),200 ){
     window.setFramerateLimit(60);
 
-
-    if (!healTex.loadFromFile("")) {
-        std::cout << "ERROR: Could not load heal texture!\n";
-    }else{
-        Obstacle heal(&healTex,sf::Vector2f(10.f,10.f),sf::Vector2f(1000.f,700.f), -100,false , 0 );
-        heals.push_back(heal);
-        currentState = GameState::MENU;
-    }
     if (!mainFont.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")) {
         std::cout << "ERROR: Could not load font!\n";
     }else{
@@ -93,6 +85,14 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     //     }
     // }
 
+    float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+    if (!healTex.loadFromFile("../assets/textures/attackes/lvl4/trap3.png")) {
+        std::cout << "ERROR: Could not load heal texture!\n";
+    }else{
+        Obstacle heal(&healTex,sf::Vector2f(50.f,50.f),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
+        heals.push_back(heal);
+        currentState = GameState::MENU;
+    }
     }
 
 

@@ -111,7 +111,6 @@ void Boss::attack(int level, std::vector<Obstacle>& attackes ) {
 
     
     int randomAttack = rand() % 6 ;
-    std::cout << randomAttack;
     if(attackesTex[level-1][randomAttack].getSize().x>0){
 
         Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(80.f, 80.f), spawnPos ,10.f, true,550);
