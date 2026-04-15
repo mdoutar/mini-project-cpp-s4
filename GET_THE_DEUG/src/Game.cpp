@@ -54,14 +54,13 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         srand(static_cast<unsigned>(time(NULL)));
         obstaclesTex.resize(4);
         for(int r =0;r<4;r++){
-            obstaclesTex[r].resize(6);
-            for(int c=0;c< obstaclesTex.size();c++){
+            obstaclesTex[r].resize(1);
+            for(int c=0;c< obstaclesTex[r].size();c++){
             if (!obstaclesTex[r][c].loadFromFile("../assets/textures/obstacles/lvl" + std::to_string(r + 1) + "/obstacle"+std::to_string(c + 1)+  ".png")) {
                 std::cout << "Error loading obstacle " << r << c <<" texture!\n";
             }else{
                 float randX = rand() % (700 -200 + 1) + 200 ;
-                Obstacle obstacle(&obstaclesTex[r][c], sf::Vector2f(300.f,300.f ),sf::Vector2f(randX , student.groundHeight), 0, false, 0);
-                obstacle.obstacle.setOrigin(obstacle.obstacle.getGlobalBounds().width ,obstacle.obstacle.getGlobalBounds().height  );
+                Obstacle obstacle(&obstaclesTex[r][c], sf::Vector2f(200.f,150.f ),sf::Vector2f(randX , student.groundHeight), 0, false, 0);
                 obstacles[r].push_back(obstacle);
             }
         }
@@ -73,7 +72,6 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
             std::cout << "ERROR: Could not load heal" << i+1 <<"texture!\n";
         }else{
             Obstacle heal(&healsTex[i],sf::Vector2f(healsTex[i].getSize().x/2,healsTex[i].getSize().y/2),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
-            heal.obstacle.setOrigin(heal.obstacle.getGlobalBounds().width ,heal.obstacle.getGlobalBounds().height );
             heals.push_back(heal);
         }
     }
@@ -252,10 +250,12 @@ void Game::update(){
             for (int c = 0; c < obstacles[r].size(); c++) {
                     Collider obstacleCol = obstacles[r][c].getCollider();
                     
-                    if (studentCol.checkCollider(obstacleCol, direction, 0.f)) {
+                    if (studentCol.checkCollider(obstacleCol, direction, -1.f)) {
                         student.takeDamage(obstacles[r][c].damage);
                         if(direction.y ==1.f){
                             student.canJump =true;
+                            student.canCrouch=true;
+                            student.velocity.y = 0.f;
                         }
                     }
                 }
@@ -274,14 +274,14 @@ void Game::update(){
             bossAttackes.at(i).update(deltaTime);
             sf::Vector2f direction;
             Collider attackCol = bossAttackes[i].getCollider();
-                for(int r(0) ; r<obstacles.size();r++ ){
-                    for (int c(0);c<obstacles[r].size();c++){
-                        Collider curObsCol = obstacles[r][c].getCollider();
-                        if(!bossAttackes[i].isDestroyed && curObsCol.checkCollider(attackCol,direction,1.f)){
-                            bossAttackes[i].destroyObstacle();
+                        if (r >= 0 && r < obstacles.size()) {
+                            for (int c = 0; c < obstacles[r].size(); c++) {
+                                Collider curObsCol = obstacles[r][c].getCollider();
+                                if(!bossAttackes[i].isDestroyed && curObsCol.checkCollider(attackCol, direction, 1.f)){
+                                    bossAttackes[i].destroyObstacle();
+                                }
+                            }
                         }
-                }
-                }
             if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(attackCol, direction, 0.0f)) {
                 bossAttackes[i].destroyObstacle();
                 student.takeDamage(bossAttackes[i].damage*currentLevel+10);
@@ -292,16 +292,25 @@ void Game::update(){
                 i++; 
             }
         }
-
-        for(int i=0;i<defenses.size();){
+        for(int i=0; i < defenses.size(); ){
             defenses[i].update(deltaTime);
             sf::Vector2f direction;
-            Collider obstCol = defenses[i].getCollider();
-            if(!defenses[i].isDestroyed && bossCol.checkCollider(obstCol,direction,0.f)){
+            Collider defenseCol = defenses[i].getCollider();
+            
+            for (int c = 0; c < obstacles[r].size(); c++){
+                Collider obstCol = obstacles[r][c].getCollider();
+                if(!defenses[i].isDestroyed && obstCol.checkCollider(defenseCol, direction, 1.f)){
+                    defenses[i].destroyObstacle(); 
+                    // obstacles[r][c].destroyObstacle();
+                }
+            }
+            
+            if(!defenses[i].isDestroyed && bossCol.checkCollider(defenseCol, direction, 0.f)){
                 defenses[i].destroyObstacle();
                 boss.takeDamage(defenses[i].damage);
+            }
 
-            }if (defenses[i].isDestroyed) {
+            if (defenses[i].isDestroyed) {
                 defenses.erase(defenses.begin() + i);
             } else {
                 i++; 

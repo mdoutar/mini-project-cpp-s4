@@ -22,9 +22,9 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         sprite.setTextureRect(animation.uvRect);
 
         sf::FloatRect bounds = sprite.getLocalBounds();
-         if (bounds.width > 0 && bounds.height > 0) {
-            sprite.setScale( 150.f/bounds.width ,150.f/ bounds.height );
-        }
+        //  if (bounds.width > 0 && bounds.height > 0) {
+        //     sprite.setScale( 150.f/bounds.width ,150.f/ bounds.height );
+        // }
         sprite.setOrigin(bounds.width / 2.f, bounds.height);
     }catch(const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
@@ -79,7 +79,7 @@ void Player::takeDamage(float damage) {
 void Player::defense( std::vector<Obstacle>& defenses , float damage,int level ){
     if(canDefense){
         sf::Vector2f position = sprite.getPosition();
-        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(defensesTex[level-1].getSize().x,defensesTex[level-1].getSize().y),position,1000.f,true,rightFace?-1000:1000);
+        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(150.f,150.f),position,1000.f,true,rightFace?-1000:1000);
         defenses.push_back(_defense);
         throwTimer = 0.f;
         canDefense =false;
@@ -108,11 +108,15 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
         velocity.y = -sqrtf(2.f  * gravity * 150.f);
     }
 
-    float scalePlayer = 1.5f;
+    float desiredWidth = 80.f;
+    float desiredHeight = 120.f;
+    float scaleX = desiredWidth / sprite.getLocalBounds().width;
+    float scaleY = desiredHeight / sprite.getLocalBounds().height;
+
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) && canCrouch) {
-        sprite.setScale(rightFace ? scalePlayer : -scalePlayer, 1.f);
+        sprite.setScale(rightFace ? scaleX : -scaleX, scaleY * 0.6f);
     } else {
-        sprite.setScale(rightFace ? scalePlayer : -scalePlayer,scalePlayer); 
+        sprite.setScale(rightFace ? scaleX : -scaleX, scaleY); 
     }
     
 

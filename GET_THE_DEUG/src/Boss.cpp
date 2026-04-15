@@ -22,7 +22,7 @@ Boss::Boss(   float startHealth):healthBar(startHealth) {
         
         sf::FloatRect bounds = sprite.getLocalBounds();
         if (bounds.width > 0 && bounds.height > 0) {
-            sprite.setScale( 200.f/bounds.width ,200.f/ bounds.height );
+            sprite.setScale( 80.f/bounds.width ,120.f/ bounds.height );
         }
     
         sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
@@ -81,7 +81,7 @@ void Boss::attack(int level, std::vector<Obstacle>& attackes ) {
     int randomAttack = rand() % 6 ;
     if(attackesTex[level-1][randomAttack].getSize().x>0){
 
-        Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(80.f, 80.f), spawnPos ,10.f, true,550);
+Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(100.f, 100.f), spawnPos, 10.f, true, 550);
         attackes.push_back(thrownItem);
     }
 }

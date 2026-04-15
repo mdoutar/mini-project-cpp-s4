@@ -11,8 +11,6 @@
 class Player {
 private:
 
-sf::Vector2f velocity;
-bool canCrouch;
 bool rightFace;
 float gravity;
 float health;
@@ -24,13 +22,15 @@ Animation animation;
 Bar healthBar;
 
 bool canDefense;
+bool canCrouch;
 bool canJump;
-    int row;
-    float throwTimer = 0.f;
-    float throwInterval = .7f;
-    float earthWidth;
-    float groundHeight;
+int row;
+float throwTimer = 0.f;
+float throwInterval = .7f;
+float earthWidth;
+float groundHeight;
 
+sf::Vector2f velocity;
     sf::Texture defensePlayerTexture;
     std::vector <sf::Texture> defensesTex;
     sf::Texture texture;

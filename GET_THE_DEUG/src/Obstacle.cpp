@@ -13,7 +13,7 @@ Obstacle::Obstacle(sf::Texture* texture, sf::Vector2f size, sf::Vector2f positio
         
     }
     
-    obstacle.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    obstacle.setOrigin(bounds.width / 2.f, bounds.height);
     obstacle.setPosition(position);
     isDestroyed = false;
 }
