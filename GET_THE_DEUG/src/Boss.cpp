@@ -3,18 +3,18 @@
 #include <ctime> 
 
 Boss::Boss(){}
-Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
+Boss::Boss(   float startHealth):healthBar(startHealth) {
 
     
     try{
         srand(static_cast<unsigned>(time(NULL)));
-        if(!idleTexture.loadFromFile("../assets/textures/idleBossTex.png")){
+        if(!idleTexture.loadFromFile("../assets/textures/idleBoss.png")){
              std::cout << "ERROR: Could not load idle boss texture!\n";
         }else{
             sprite.setTexture(idleTexture);
         }
 
-        if(!attackTextureBoss.loadFromFile("../assets/textures/attackBossTex.png")){
+        if(!attackTextureBoss.loadFromFile("../assets/textures/attackBoss.png")){
              std::cout << "ERROR: Could not load boss attacking texture!\n";
         }
 
@@ -22,7 +22,7 @@ Boss::Boss( sf::Vector2f size,  float startHealth):healthBar(startHealth) {
         
         sf::FloatRect bounds = sprite.getLocalBounds();
         if (bounds.width > 0 && bounds.height > 0) {
-            sprite.setScale(size.x / bounds.width, size.y / bounds.height);
+            sprite.setScale( 200.f/bounds.width ,200.f/ bounds.height );
         }
     
         sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);

@@ -37,6 +37,8 @@ public :
     
     
     std::vector<Obstacle> defenses;
+
+    std::vector<sf::Texture> healsTex;
     std::vector<Obstacle> heals;
 
     std::vector<std::vector <sf::Texture>> obstaclesTex;
@@ -48,6 +50,8 @@ public :
      
      sf::RectangleShape background;
      sf::RectangleShape gameOver;
+     std::vector<sf::Texture>levelCompleteBgTex;
+     std::vector<sf::RectangleShape> levelCompleteBg;
      sf::RectangleShape gameFinished;
      
      sf::Music bgMusic;
@@ -58,9 +62,7 @@ public :
      Player student;
      Boss boss;
     
-     sf::Text levelText;
      
-     sf::Texture healTex;
      
      std::vector<sf::Texture> bgTextures;
      sf::Texture gameOverTex;

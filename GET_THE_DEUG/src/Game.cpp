@@ -6,17 +6,10 @@ static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f;
 
 
 
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( sf::Vector2f(100.f,100.f),200 ){
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( 200 ){
     window.setFramerateLimit(60);
 
-    if (!mainFont.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")) {
-        std::cout << "ERROR: Could not load font!\n";
-    }else{
-        levelText.setFont(mainFont);
-        levelText.setCharacterSize(40);
-        levelText.setFillColor(sf::Color::Green);
-
-    }    
+    
     if (  !bgMusic.openFromFile("../assets/background_theme.ogg") ) {
             std::cout << "ERROR: Could not load background music!\n";
     }else{
@@ -44,16 +37,13 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         background.setTexture(&bgTextures[0]);
         background.setSize(sf::Vector2f(bgTextures[0].getSize().x, window.getSize().y));
 
-    if(!gameFinishedTex.loadFromFile("../assets/textures/finished.png") ){
+    if(!gameFinishedTex.loadFromFile("../assets/textures/levelComplete/finished.png") ){
         std::cout << "ERROR: Could not load win texture " << std::endl;
     }else{
         gameFinished.setTexture(&gameFinishedTex);
         gameFinished.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
     }
     obstacles.resize(4);
-
-    
-
         student.groundHeight = 500.f;
         student.setPosition(sf::Vector2f(100.f, student.groundHeight));
         student.earthWidth = background.getLocalBounds().width;
@@ -61,39 +51,44 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
         
 
-
-    // not add textures yet
-    //     srand(static_cast<unsigned>(time(NULL)));
-    //     obstaclesTex.resize(4);
-    //     for(int r =0;r<4;r++){
-    //         obstaclesTex[r].resize(6);
-    //         for(int c=0;c< 6;c++){
-    //         if (!obstaclesTex[r][c].loadFromFile("../assets/textures/obstackes/lvl" + std::to_string(r + 1) + "/trap"+std::to_string(c + 1)+  ".png")) {
-    //             // std::cout << "Error loading trap texture!\n";
-    //         }else{
-
-    //             // float randX = rand() % (700 -200 + 1) + 200 ;
-                
-    //             int maxY = static_cast<int>(student.groundHeight);
-    //             int minY = static_cast<int>(student.groundHeight) - 200;
-    //             float randY = rand() % (maxY - minY + 1) + minY;
-                
-    //             Obstacle trap(&obstaclesTex[r][c], sf::Vector2f(80.f,80.f ),sf::Vector2f(250.f + c* 250.f , randY), 0, false, 0);
-                
-    //             obstacles[r].push_back(trap);
-    //         }
-    //     }
-    // }
-
-    float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
-    if (!healTex.loadFromFile("../assets/textures/attackes/lvl4/trap3.png")) {
-        std::cout << "ERROR: Could not load heal texture!\n";
-    }else{
-        Obstacle heal(&healTex,sf::Vector2f(50.f,50.f),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
-        heals.push_back(heal);
-        currentState = GameState::MENU;
+        srand(static_cast<unsigned>(time(NULL)));
+        obstaclesTex.resize(4);
+        for(int r =0;r<4;r++){
+            obstaclesTex[r].resize(6);
+            for(int c=0;c< obstaclesTex.size();c++){
+            if (!obstaclesTex[r][c].loadFromFile("../assets/textures/obstacles/lvl" + std::to_string(r + 1) + "/obstacle"+std::to_string(c + 1)+  ".png")) {
+                std::cout << "Error loading obstacle " << r << c <<" texture!\n";
+            }else{
+                float randX = rand() % (700 -200 + 1) + 200 ;
+                Obstacle obstacle(&obstaclesTex[r][c], sf::Vector2f(300.f,300.f ),sf::Vector2f(randX , student.groundHeight), 0, false, 0);
+                obstacle.obstacle.setOrigin(obstacle.obstacle.getGlobalBounds().width ,obstacle.obstacle.getGlobalBounds().height  );
+                obstacles[r].push_back(obstacle);
+            }
+        }
     }
+    healsTex.resize(4);
+    for(int i(0); i<healsTex.size() ;i++ ){
+        float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+        if (!healsTex[i].loadFromFile("../assets/textures/heals/heal"+std::to_string(i+1)+".png")) {
+            std::cout << "ERROR: Could not load heal" << i+1 <<"texture!\n";
+        }else{
+            Obstacle heal(&healsTex[i],sf::Vector2f(healsTex[i].getSize().x/2,healsTex[i].getSize().y/2),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
+            heal.obstacle.setOrigin(heal.obstacle.getGlobalBounds().width ,heal.obstacle.getGlobalBounds().height );
+            heals.push_back(heal);
+        }
     }
+    levelCompleteBg.resize(3);
+    levelCompleteBgTex.resize(3);
+    for(int i(0); i<levelCompleteBgTex.size();i++){
+        if(!levelCompleteBgTex[i].loadFromFile("../assets/textures/levelComplete/level"+std::to_string(i+1)+"Passed.png")){
+            std::cout << "Error loading level complete background" << i+1 <<" texture!\n";
+        }else{
+            levelCompleteBg[i].setTexture(&levelCompleteBgTex[i]);
+            levelCompleteBg[i].setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
+        }
+    }
+    currentState = GameState::MENU;
+}
 
 
 
@@ -114,7 +109,7 @@ void Game::processEvent(){
                     currentState= GameState::MENU;
                 }
                 else if( student.canDefense &&(event.key.code ==sf::Keyboard::E || event.mouseButton.button ==sf::Mouse::Right)){
-                    student.defense(defenses ,float((5-currentLevel)*10));
+                    student.defense(defenses ,float((5-currentLevel)*10) , currentLevel);
                 }
                 }
         else if (currentState == GameState::MENU) {
@@ -201,16 +196,25 @@ void Game::resetGame(){
 
     bossAttackes.clear();
     defenses.clear();
-    heals.clear();
+    // heals.clear();
 
-    float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
-    Obstacle heal(&healTex,sf::Vector2f(50.f,50.f),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
-    heals.push_back(heal);
-    std::cout << healTex.getSize().y;
+
+    for(int i(0); i < heals.size() ;i++ ){
+        float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+        heals[i].isDestroyed = false;
+        heals[i].obstacle.setPosition(sf::Vector2f(randHealPosX,student.groundHeight));
+    }
 
     int newBossHealth = float(100 + (currentLevel * 100));
     boss.healthBar.setMaxHealth(newBossHealth);
     boss.reset(newBossHealth);
+
+    for(int r(0); r<obstacles.size(); r++){
+        for(int c(0) ; c<obstacles[r].size(); c++){
+            float randX = rand() % (700 -200 + 1) + 200 ;
+            obstacles[r][c].obstacle.setPosition(sf::Vector2f(randX , student.groundHeight));
+        }
+    }
     
     student.reset(200.f,300);
     student.setPosition(sf::Vector2f(100.f, student.groundHeight));
@@ -239,41 +243,50 @@ void Game::update(){
         Collider bossCol = boss.getCollider();
         Collider studentCol = student.getCollider();
      
-        for(int i =0 ; i<heals.size();){
-            Collider healCol = heals.at(i).getCollider();
-            if(!heals[i].isDestroyed && studentCol.checkCollider(healCol ,direction, 0.0f)){
-                heals[i].destroyObstacle();
-                student.takeDamage(heals[i].damage);
-            }else if(heals[i].isDestroyed){
-                heals.erase(heals.begin()+i);
-            }
-            else{
-                i++;
-            }
-        }
+ 
         
-        //     int r = currentLevel - 1;
 
-        //     if (r >= 0 && r < obstacles.size()) {
-        //     for (int c = 0; c < obstacles[r].size(); c++) {
-        //             Collider trapCol = obstacles[r][c].getCollider();
-        //             if (studentCol.checkCollider(trapCol, direction, 0.f)) {
-        //                 student.takeDamage(obstacles[r][c].damage);
-        //                 if(direction.y ==1.f){
-        //                     student.canJump =true;
-        //                 }
-        //             }
-        //         }
-        // }
+        int r = currentLevel - 1;
 
+            if (r >= 0 && r < obstacles.size()) {
+            for (int c = 0; c < obstacles[r].size(); c++) {
+                    Collider obstacleCol = obstacles[r][c].getCollider();
+                    
+                    if (studentCol.checkCollider(obstacleCol, direction, 0.f)) {
+                        student.takeDamage(obstacles[r][c].damage);
+                        if(direction.y ==1.f){
+                            student.canJump =true;
+                        }
+                    }
+                }
+        }
+            if (r >= 0 && r < heals.size()) {
+                Collider healCol = heals.at(r).getCollider();
+                if(!heals[r].isDestroyed && studentCol.checkCollider(healCol ,direction, 0.0f)){
+                    student.takeDamage(heals[r].damage);
+                    student.canJump = true;
+                    heals[r].destroyObstacle();
+                }else if(heals[r].isDestroyed){
+                    heals[r].obstacle.setPosition(-1000.f,-1000.0f);
+                }
+            }
         for (int i=0 ;i< bossAttackes.size();){
             bossAttackes.at(i).update(deltaTime);
             sf::Vector2f direction;
-            Collider obstCol = bossAttackes[i].getCollider();
-            if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(obstCol, direction, 0.0f)) {
+            Collider attackCol = bossAttackes[i].getCollider();
+                for(int r(0) ; r<obstacles.size();r++ ){
+                    for (int c(0);c<obstacles[r].size();c++){
+                        Collider curObsCol = obstacles[r][c].getCollider();
+                        if(!bossAttackes[i].isDestroyed && curObsCol.checkCollider(attackCol,direction,1.f)){
+                            bossAttackes[i].destroyObstacle();
+                        }
+                }
+                }
+            if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(attackCol, direction, 0.0f)) {
                 bossAttackes[i].destroyObstacle();
                 student.takeDamage(bossAttackes[i].damage*currentLevel+10);
-            }else if (bossAttackes[i].isDestroyed) {
+            }
+            else if (bossAttackes[i].isDestroyed) {
                 bossAttackes.erase(bossAttackes.begin() + i);
             } else {
                 i++; 
@@ -316,15 +329,11 @@ void Game::update(){
 
 
         if(boss.getHealth() <=0){
-            currentState = GameState::LEVEL_COMPLETE;
-            transitionTimer = 0.f;
-            levelText.setString("Level " + std::to_string(currentLevel) + " Complete!\nLoading Level " + std::to_string(currentLevel + 1) + "...");
-            currentLevel++;
-            levelText.setPosition(250.f, 250.f);
-                if (currentLevel <= 4) {
-                resetGame();
-            } else {
-                currentState = GameState::GET_DEUG;
+            if(currentLevel == 4){
+            currentState = GameState::GET_DEUG;
+            }else{
+                currentState = GameState::LEVEL_COMPLETE;
+                transitionTimer = 0.f;                    
             }
         }
         // if(student.canDefense){
@@ -347,10 +356,16 @@ void Game::update(){
     }
 
     if (currentState == GameState::LEVEL_COMPLETE) {
+        
         transitionTimer += deltaTime;
         if (transitionTimer > 3.0f) { 
-            resetGame();
-            currentState = GameState::PLAYING;
+            if (currentLevel < 4) {
+                currentLevel++;
+                resetGame();
+                currentState = GameState::PLAYING;
+            } else {
+                currentState = GameState::GET_DEUG;
+            }
         }
     }
 }
@@ -373,33 +388,43 @@ void Game::render() {
         for (int i = 0; i < bossAttackes.size(); i++) {
             bossAttackes[i].draw(window);
         }
-        for (int i = 0; i < heals.size(); i++) {
-            heals[i].draw(window);
-        }
+        
+        
         for(int i=0;i<defenses.size();i++){
             defenses[i].draw(window);
         }
-
-        // int r = currentLevel - 1;
-
-        // if (r >= 0 && r < obstacles.size()) {
-        //     for (int i = 0; i < obstacles[r].size(); i++) {
-        //         obstacles[r][i].draw(window);
-        //     }
-        // }
+        
+        int r = currentLevel - 1;
+        
+        if (r >= 0 && r < obstacles.size()) {
+            for (int i = 0; i < obstacles[r].size(); i++) {
+                if(obstacles[r][i].obstacle.getGlobalBounds().width > 0){
+                    obstacles[r][i].draw(window);
+                }
+            }
+        }
+        if (r >= 0 && r < heals.size()) {
+            heals[r].draw(window);
+        }
 
     }
-    else if (currentState == GameState::LEVEL_COMPLETE) {
-        window.clear(sf::Color::Yellow);
-        window.setView(window.getDefaultView());
-        window.draw(levelText);
+else if (currentState == GameState::LEVEL_COMPLETE) {
+    window.clear(sf::Color::Black);
+    window.setView(window.getDefaultView());
+    
+    int bgIndex = currentLevel - 1;
+    if(bgIndex >= 0 && bgIndex < levelCompleteBg.size()){
+        window.draw(levelCompleteBg[bgIndex]);
     }
+}
+
       else if (currentState == 
         GameState::GAME_OVER){
             window.clear(sf::Color::Black);
             window.setView(window.getDefaultView());
             window.draw(gameOver);
         }
+
         else if(currentState == GameState::GET_DEUG){
             window.clear(sf::Color::Black);
             window.setView(window.getDefaultView());

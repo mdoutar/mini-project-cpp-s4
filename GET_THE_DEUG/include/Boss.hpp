@@ -28,7 +28,7 @@ private:
 
 
     Boss();
-    Boss( sf::Vector2f size, float startHealth);
+    Boss(  float startHealth);
 
     sf::FloatRect getBounds();
     void update(float deltaTime);

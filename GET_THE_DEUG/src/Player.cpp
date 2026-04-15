@@ -9,16 +9,22 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         }else{
             sprite.setTexture(texture);
         }
-    
-        if(!    defenseTexture.loadFromFile("../assets/textures/attackes/lvl4/trap3.png")){
-                std::cout << "ERROR: Could not load defense student texture!\n";
+        defensesTex.resize(4);
+        for(int i(0) ; i<defensesTex.size();i++){
+            if(!defensesTex[i].loadFromFile("../assets/textures/defenses/defenseLvl"+std::to_string(i+1)+".png")){
+                std::cout << "ERROR: Could not load defense "<< i <<" student texture!\n";
+            }
+            std::cout << i ;
         }
         
         row=0;
-        animation = Animation(texture, sf::Vector2u(5, 5), 0.1f);
+        animation = Animation(texture, sf::Vector2u(5, 3), 0.1f);
         sprite.setTextureRect(animation.uvRect);
 
         sf::FloatRect bounds = sprite.getLocalBounds();
+         if (bounds.width > 0 && bounds.height > 0) {
+            sprite.setScale( 150.f/bounds.width ,150.f/ bounds.height );
+        }
         sprite.setOrigin(bounds.width / 2.f, bounds.height);
     }catch(const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
@@ -70,10 +76,10 @@ void Player::takeDamage(float damage) {
     }
     healthBar.setHealth(health);
 }
-void Player::defense( std::vector<Obstacle>& defenses , float damage ){
+void Player::defense( std::vector<Obstacle>& defenses , float damage,int level ){
     if(canDefense){
         sf::Vector2f position = sprite.getPosition();
-        Obstacle _defense(&defenseTexture,sf::Vector2f(50.f,50.f),position,1000.f,true,rightFace?-1000:1000);
+        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(defensesTex[level-1].getSize().x,defensesTex[level-1].getSize().y),position,1000.f,true,rightFace?-1000:1000);
         defenses.push_back(_defense);
         throwTimer = 0.f;
         canDefense =false;
@@ -117,7 +123,7 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     velocity.y += gravity * deltaTime;
 
     if (velocity.x != 0.f) {
-        row=2;
+        row=1;
         if (velocity.x > 0.0f) {
             rightFace = true;
         } else {
@@ -133,7 +139,7 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
         canJump = true;  
         canCrouch = true;
     }
-    if(!canJump) row=3;
+    if(!canJump) row=2;
 
     if (sprite.getPosition().x < 0.f) {
         setPosition(sf::Vector2f(0,sprite.getPosition().y));

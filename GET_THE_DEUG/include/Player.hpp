@@ -32,7 +32,7 @@ bool canJump;
     float groundHeight;
 
     sf::Texture defensePlayerTexture;
-    sf::Texture defenseTexture;
+    std::vector <sf::Texture> defensesTex;
     sf::Texture texture;
     sf::Texture deadTex;    
 
@@ -42,14 +42,14 @@ bool canJump;
     void update(float deltaTime, sf::Vector2f bossPos);
     void draw(sf::RenderWindow& window);
     
-    void onCollision(sf::Vector2f direction);
+    // void onCollision(sf::Vector2f direction);
      Collider getCollider() { return Collider(sprite); }
     void takeDamage(float damage);
     int getHealth();
     sf::Vector2f getPosition() { return sprite.getPosition(); }
     void reset( float newHealth, int newSpeed);
     sf::FloatRect getBounds(); 
-    void defense(  std::vector<Obstacle>& defenses, float damage);
+    void defense(  std::vector<Obstacle>& defenses, float damage,int level);
     void setPosition(sf::Vector2f pos);
 };
 
