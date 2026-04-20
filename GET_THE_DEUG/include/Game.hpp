@@ -25,10 +25,13 @@ enum class GameState {
 class Game
 {
 private:
-sf::Font mainFont;
-GameState currentState;
 int currentLevel = 1;
 float deltaTime;
+float optShake = 0.f ;
+float shakeTime;
+
+sf::Font mainFont;
+GameState currentState;
 sf::Clock clock;
 sf::RenderWindow window;
 
@@ -75,6 +78,7 @@ public :
      
      Game();
      void resetGame();
+     void shakeView();
     void update();
     void run();
     void processEvent();

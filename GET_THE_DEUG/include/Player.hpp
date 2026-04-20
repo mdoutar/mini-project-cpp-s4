@@ -33,8 +33,7 @@ float groundHeight;
 sf::Vector2f velocity;
     sf::Texture defensePlayerTexture;
     std::vector <sf::Texture> defensesTex;
-    sf::Texture texture;
-    sf::Texture deadTex;    
+    sf::Texture texture;    
 
 
     Player(float health , int speed);

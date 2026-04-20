@@ -250,14 +250,18 @@ void Game::update(){
             for (int c = 0; c < obstacles[r].size(); c++) {
                     Collider obstacleCol = obstacles[r][c].getCollider();
                     
-                    if (studentCol.checkCollider(obstacleCol, direction, -1.f)) {
-                        student.takeDamage(obstacles[r][c].damage);
-                        if(direction.y ==1.f){
-                            student.canJump =true;
-                            student.canCrouch=true;
-                            student.velocity.y = 0.f;
+                     if (studentCol.checkCollider(obstacleCol, direction, -1.f)) {
+                         student.takeDamage(obstacles[r][c].damage);
+                         if(direction.y ==1.f){
+                             student.canJump =true;
+                             student.canCrouch=true;
+                             student.velocity.y = 0.f;
+                             optShake = obstacleCol.getPosition().x;
+                            }
                         }
-                    }
+                        if (direction.y == 0.f && std::abs(optShake - obstacleCol.getPosition().x) < 3.f && std::abs(student.groundHeight - student.getPosition().y) < 3.f ) {
+                            optShake = 1.f; 
+                        }
                 }
         }
             if (r >= 0 && r < heals.size()) {
@@ -279,12 +283,14 @@ void Game::update(){
                                 Collider curObsCol = obstacles[r][c].getCollider();
                                 if(!bossAttackes[i].isDestroyed && curObsCol.checkCollider(attackCol, direction, 1.f)){
                                     bossAttackes[i].destroyObstacle();
+                                    
                                 }
                             }
                         }
             if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(attackCol, direction, 0.0f)) {
                 bossAttackes[i].destroyObstacle();
                 student.takeDamage(bossAttackes[i].damage*currentLevel+10);
+                // shakeTime = 0.3f;
             }
             else if (bossAttackes[i].isDestroyed) {
                 bossAttackes.erase(bossAttackes.begin() + i);
@@ -358,6 +364,12 @@ void Game::update(){
         
         view.setCenter(student.getPosition());
         view.clampToBounds(background.getGlobalBounds().width,background.getGlobalBounds().height);
+        if(optShake ==1.f){
+            shakeTime = 0.3f;
+            optShake = 0.f;
+        }
+        shakeView();
+
     }
 
     if(currentState ==GameState::MENU){
@@ -441,4 +453,15 @@ else if (currentState == GameState::LEVEL_COMPLETE) {
         }
 
     window.display();
+}
+
+void Game::shakeView(){
+    if (shakeTime <= 0.f) {
+        return; 
+    }
+    float shakeX = static_cast<float>((rand() % 7) - 5);
+    float shakeY = static_cast<float>((rand() % 7) - 5);
+
+    view.view.move(shakeX, shakeY);
+    shakeTime -= deltaTime;
 }
