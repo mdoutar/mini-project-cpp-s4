@@ -21,7 +21,7 @@ MenuOptions[0] = "Play";
 
     clickSound.setBuffer(clickBuffer);
     if (!font.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")) { 
-            std::cout << "CRITICAL ERROR: Failed to load font!\n";
+            std::cout << "CRITICAL ERROR: Failed to load menu font!\n";
         }
 
     if (!btnTex.loadFromFile("../assets/texures/10.png")) {
@@ -68,9 +68,10 @@ void Menu::focus(){
 }
 void Menu::handleHover(sf::Vector2f mousePos){
     for (int i = 0; i < MAXSIZE; i++) {
-        if (buttons[i].getGlobalBounds().contains(mousePos)) {
+        if (text_menu[i].getGlobalBounds().contains(mousePos)) {
             if (curSelected != i) {
                 removeFocus();
+                std::cout << mousePos.x;
                 curSelected = i;
                 focus();
             }
@@ -80,7 +81,7 @@ void Menu::handleHover(sf::Vector2f mousePos){
 }
 int Menu::checkMouseClick(sf::Vector2f mousePos) {
     for (int i = 0; i < MAXSIZE; i++) {
-        if (buttons[i].getGlobalBounds().contains(mousePos)) {
+        if (text_menu[i].getGlobalBounds().contains(mousePos)) {
             removeFocus();
             curSelected = i;
             focus();

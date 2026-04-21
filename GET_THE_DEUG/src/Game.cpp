@@ -2,26 +2,31 @@
 #include <cstdlib> 
 #include <ctime>   
 
-static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f;
+static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f, MUSIC_VOLUME = 10.f,STUDENT_HEALTH = 200.f ,STUDENT_STARTED_POSX =100.f , DISTANCE_BTN_OBTSCLS = 50.F ;
+static const int   STUDENT_SPEED =300, BOSS_STARTED_HEALTH = 200; 
 
 
-
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( 200 ){
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( STUDENT_HEALTH,STUDENT_SPEED),boss( BOSS_STARTED_HEALTH   ){
     window.setFramerateLimit(60);
     bool positionOccupied;
     reservedSpacesX.reserve(15);
-    if (  !bgMusic.openFromFile("../assets/background_theme.ogg") ) {
+    
+    if(!mainFont.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")){
+        std::cout << "ERROR: Could not load  main font!";
+    }
+
+    if (  !bgMusic.openFromFile("../assets/audios/background_music.mp3") ) {
             std::cout << "ERROR: Could not load background music!\n";
     }else{
             bgMusic.setLoop(true);
-            bgMusic.setVolume(50.f);
+            bgMusic.setVolume(MUSIC_VOLUME);
             bgMusic.play(); 
     }
     if (  !fightingMusic.openFromFile("../assets/fighting_theme.ogg") ) {
             std::cout << "ERROR: Could not load fighting music!\n";
     }else{
             fightingMusic.setLoop(true);
-            fightingMusic.setVolume(50.f);
+            fightingMusic.setVolume(MUSIC_VOLUME);
     }
     if(!gameOverTex.loadFromFile("../assets/textures/game-over.png")){}else{
         gameOver.setTexture(&gameOverTex);
@@ -45,7 +50,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     }
         obstacles.resize(4);
         student.groundHeight = 500.f;
-        student.setPosition(sf::Vector2f(100.f, student.groundHeight));
+        student.setPosition(sf::Vector2f(STUDENT_STARTED_POSX, student.groundHeight));
         student.earthWidth = background.getLocalBounds().width;
 
         boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
@@ -64,7 +69,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
                     positionOccupied = false;
                     randX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 1000) - 300 +1) + 300;
                     for (float reservedSpace : reservedSpacesX){
-                    if (std::abs(randX - reservedSpace) < 10.f) {
+                    if (std::abs(randX - reservedSpace) < DISTANCE_BTN_OBTSCLS) {
                         positionOccupied = true;
                         break;
                     }
@@ -87,7 +92,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
                 positionOccupied = false;
                 randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
                 for (float reservedSpace : reservedSpacesX){
-                   if (std::abs(randHealPosX  - reservedSpace) < 10.f) {
+                   if (std::abs(randHealPosX  - reservedSpace) < DISTANCE_BTN_OBTSCLS) {
                     positionOccupied = true;
                     break;
                    }
@@ -109,6 +114,12 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         }
     }
     currentState = GameState::MENU;
+
+    muteButton.setPosition(sf::Vector2f(10.f,50.f));
+    muteButton.setFillColor(sf::Color::Red);
+    muteButton.setFont(mainFont);
+    muteButton.setCharacterSize(40);
+    // muteButton.setScale(.5f,.5f);
 }
 
 
@@ -207,7 +218,29 @@ void Game::processEvent(){
             }
         }
     }
-       
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+        mainMenu.clickSound.play();
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        if (muteButton.getGlobalBounds().contains(mousePos)) {
+            muted =!muted;
+        }
+        // if(student.canDefense){
+         //      if(bgMusic.getStatus() == bgMusic.Playing){
+         //          bgMusic.pause();
+         //      }
+         //     fightingMusic.play();
+         // }else if(fightingMusic.getStatus() == fightingMusic.Playing){
+         //     fightingMusic.pause();
+         //     bgMusic.play();
+         // }
+     if(muted){
+         muteButton.setString("muted ");
+         bgMusic.pause();
+     }else{
+         bgMusic.play();
+         muteButton.setString("mute");
+     }
+    }
 }
 
 
@@ -228,7 +261,7 @@ void Game::resetGame(){
                 positionOccupied = false;
                 randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
                 for (float reservedSpace : reservedSpacesX){
-                   if (std::abs(randHealPosX  - reservedSpace) < 10.f) {
+                   if (std::abs(randHealPosX  - reservedSpace) < DISTANCE_BTN_OBTSCLS) {
                     positionOccupied = true;
                     break;
                    }
@@ -249,7 +282,7 @@ void Game::resetGame(){
                 positionOccupied = false;
                 randX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 1000) - 300 +1) + 300;
                 for (float reservedSpace : reservedSpacesX){
-                   if (std::abs(randX - reservedSpace) < 10.f) {
+                   if (std::abs(randX - reservedSpace) < DISTANCE_BTN_OBTSCLS) {
                     positionOccupied = true;
                     break;
                    }
@@ -260,8 +293,8 @@ void Game::resetGame(){
         }
     }
     
-    student.reset(200.f,300);
-    student.setPosition(sf::Vector2f(100.f, student.groundHeight));
+    student.reset(STUDENT_HEALTH,STUDENT_SPEED);
+    student.setPosition(sf::Vector2f(STUDENT_STARTED_POSX, student.groundHeight));
     
 };  
 
@@ -397,15 +430,7 @@ void Game::update(){
                 transitionTimer = 0.f;                    
             }
         }
-        // if(student.canDefense){
-        //      if(bgMusic.getStatus() == bgMusic.Playing){
-        //          bgMusic.pause();
-        //      }
-        //     fightingMusic.play();
-        // }else if(fightingMusic.getStatus() == fightingMusic.Playing){
-        //     fightingMusic.pause();
-        //     bgMusic.play();
-        // }
+ 
 
         
         view.setCenter(student.getPosition());
@@ -497,7 +522,7 @@ else if (currentState == GameState::LEVEL_COMPLETE) {
             window.setView(window.getDefaultView());
             window.draw(gameFinished);
         }
-
+    window.draw(muteButton);
     window.display();
 }
 

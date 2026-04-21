@@ -79,7 +79,8 @@ void Player::takeDamage(float damage) {
 void Player::defense( std::vector<Obstacle>& defenses , float damage,int level ){
     if(canDefense){
         sf::Vector2f position = sprite.getPosition();
-        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(150.f,150.f),position,damage,true,rightFace?-1000:1000);
+        // set player damage *10 just for testing the levels fast
+        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(150.f,150.f),position,damage * 10,true,rightFace?-1000:1000);
         defenses.push_back(_defense);
         throwTimer = 0.f;
         canDefense =false;

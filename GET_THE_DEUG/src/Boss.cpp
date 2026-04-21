@@ -1,7 +1,7 @@
 #include "../include/Boss.hpp"
 #include <cstdlib> 
 #include <ctime> 
-
+static const float BOOS_WIDTH = 80.f, BOOS_HEIGHT = 120.f;
 Boss::Boss(){}
 Boss::Boss(   float startHealth):healthBar(startHealth) {
 
@@ -22,7 +22,7 @@ Boss::Boss(   float startHealth):healthBar(startHealth) {
         
         sf::FloatRect bounds = getBounds();
         if (bounds.width > 0 && bounds.height > 0) {
-            sprite.setScale( 80.f/bounds.width ,120.f/ bounds.height );
+            sprite.setScale( BOOS_WIDTH/bounds.width ,BOOS_HEIGHT/ bounds.height );
         }
     
         sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
@@ -77,12 +77,19 @@ void Boss::attack(int level, std::vector<Obstacle>& attackes ) {
     isAttacking = true;
     attackAnimTimer = 0.f;
 
+    sprite.setTexture(attackTextureBoss, true);
+    sf::FloatRect localBounds = sprite.getLocalBounds();
+    if (localBounds.width > 0 && localBounds.height > 0) {
+        sprite.setScale(BOOS_WIDTH / localBounds.width, BOOS_HEIGHT / localBounds.height);
+        sprite.setOrigin(localBounds.width / 2.f, localBounds.height / 2.f);
+    }
+
         int randomAttack = rand() % 6 ;
     if(attackesTex[level-1][randomAttack].getSize().x>0){
 
-Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(100.f, 100.f), spawnPos, 10.f, true, 550);
-        attackes.push_back(thrownItem);
-    }
+    Obstacle thrownItem(&attackesTex[level-1][randomAttack], sf::Vector2f(100.f, 100.f), spawnPos, 10.f, true, 550);
+            attackes.push_back(thrownItem);
+        }
 }
 
 float Boss::getHealth() {
@@ -119,10 +126,13 @@ void Boss::update(float deltaTime) {
         attackAnimTimer += deltaTime;
         if (attackAnimTimer > 0.3f) { 
             isAttacking = false;
-            sprite.setTexture(idleTexture); 
-        }else{
-            sprite.setTexture(attackTextureBoss);
+            sprite.setTexture(idleTexture, true);
         }
+        sf::FloatRect localBounds = sprite.getLocalBounds();
+            if (localBounds.width > 0 && localBounds.height > 0) {
+                sprite.setScale(BOOS_WIDTH / localBounds.width, BOOS_HEIGHT / localBounds.height);
+                sprite.setOrigin(localBounds.width / 2.f, localBounds.height / 2.f);
+            }
     }
 
     sf::Vector2f barPosition = getPosition() ;

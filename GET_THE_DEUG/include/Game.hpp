@@ -25,66 +25,70 @@ enum class GameState {
 class Game
 {
 private:
-int currentLevel = 1;
-float deltaTime;
-float optShake = 0.f ;
-float shakeTime;
+    int currentLevel = 1;
+    float deltaTime;
+    float optShake = 0.f ;
+    float shakeTime;
+    bool muted=false;
 
-sf::Font mainFont;
-GameState currentState;
-sf::Clock clock;
-sf::RenderWindow window;
+    GameState currentState;
 
-public : 
+    std::vector<float> reservedSpacesX;
 
+    sf::Texture gameOverTex;
+    std::vector<sf::Texture> bgTextures;
+     sf::Texture gameFinishedTex;
+     std::vector<sf::Texture> healsTex;
+    
+     sf::Font mainFont;
+    sf::Clock clock;
+    sf::RenderWindow window;
     
     
     std::vector<Obstacle> defenses;
-
-    std::vector<sf::Texture> healsTex;
+    
     std::vector<Obstacle> heals;
 
     std::vector<std::vector <sf::Texture>> obstaclesTex;
     std::vector<std::vector <Obstacle>> obstacles;
-
+    
     
     std::vector<Obstacle> bossAttackes;
-
-     
-    std::vector<float> reservedSpacesX;
-
+    
+    
+    
+    
      sf::RectangleShape background;
      sf::RectangleShape gameOver;
+     sf::RectangleShape gameFinished;
+     sf::Text muteButton;
+
      std::vector<sf::Texture>levelCompleteBgTex;
      std::vector<sf::RectangleShape> levelCompleteBg;
-     sf::RectangleShape gameFinished;
      
      sf::Music bgMusic;
      sf::Music fightingMusic;
      
      ContView view;
-     Menu mainMenu;
      Player student;
      Boss boss;
+     Menu mainMenu;
     
      
-     
-     std::vector<sf::Texture> bgTextures;
-     sf::Texture gameOverTex;
-     sf::Texture gameFinishedTex;
+
      
      float transitionTimer = 0.f;
      
-     public:
-     
-     
-     Game();
      void resetGame();
      void shakeView();
-    void update();
+     void processEvent();
+     void update();
+     void render();
+     
+     public:     
+     
+     Game();
     void run();
-    void processEvent();
-    void render();
 
 };
 
