@@ -10,10 +10,6 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     window.setFramerateLimit(60);
     bool positionOccupied;
     reservedSpacesX.reserve(15);
-    
-    if(!mainFont.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")){
-        std::cout << "ERROR: Could not load  main font!";
-    }
 
     if (  !bgMusic.openFromFile("../assets/audios/background_music.mp3") ) {
             std::cout << "ERROR: Could not load background music!\n";
@@ -115,11 +111,14 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     }
     currentState = GameState::MENU;
 
+    if(!muteOffTex.loadFromFile("../assets/textures/music_off.png")){
+        std::cout << "Could not load mute off texture" ;
+    }
+    if(!muteOnTex.loadFromFile("../assets/textures/music_on.png")){
+        std::cout << "Could not load mute on texture" ;
+    }
+    muteButton.setTexture(muteOnTex);
     muteButton.setPosition(sf::Vector2f(10.f,50.f));
-    muteButton.setFillColor(sf::Color::Red);
-    muteButton.setFont(mainFont);
-    muteButton.setCharacterSize(40);
-    // muteButton.setScale(.5f,.5f);
 }
 
 
@@ -224,21 +223,21 @@ void Game::processEvent(){
         if (muteButton.getGlobalBounds().contains(mousePos)) {
             muted =!muted;
         }
-        // if(student.canDefense){
-         //      if(bgMusic.getStatus() == bgMusic.Playing){
-         //          bgMusic.pause();
-         //      }
-         //     fightingMusic.play();
-         // }else if(fightingMusic.getStatus() == fightingMusic.Playing){
-         //     fightingMusic.pause();
-         //     bgMusic.play();
-         // }
+        if(student.canDefense){
+              if(bgMusic.getStatus() == bgMusic.Playing){
+                  bgMusic.pause();
+              }
+             fightingMusic.play();
+         }else if(fightingMusic.getStatus() == fightingMusic.Playing){
+             fightingMusic.pause();
+             bgMusic.play();
+         }
      if(muted){
-         muteButton.setString("muted ");
          bgMusic.pause();
+         muteButton.setTexture(muteOffTex);
      }else{
          bgMusic.play();
-         muteButton.setString("mute");
+         muteButton.setTexture(muteOnTex);
      }
     }
 }
@@ -500,15 +499,15 @@ void Game::render() {
         }
 
     }
-else if (currentState == GameState::LEVEL_COMPLETE) {
-    window.clear(sf::Color::Black);
-    window.setView(window.getDefaultView());
-    
-    int bgIndex = currentLevel - 1;
-    if(bgIndex >= 0 && bgIndex < levelCompleteBg.size()){
-        window.draw(levelCompleteBg[bgIndex]);
+    else if (currentState == GameState::LEVEL_COMPLETE) {
+        window.clear(sf::Color::Black);
+        window.setView(window.getDefaultView());
+        
+        int bgIndex = currentLevel - 1;
+        if(bgIndex >= 0 && bgIndex < levelCompleteBg.size()){
+            window.draw(levelCompleteBg[bgIndex]);
+        }
     }
-}
 
       else if (currentState == 
         GameState::GAME_OVER){
@@ -522,6 +521,7 @@ else if (currentState == GameState::LEVEL_COMPLETE) {
             window.setView(window.getDefaultView());
             window.draw(gameFinished);
         }
+        window.setView(window.getDefaultView());
     window.draw(muteButton);
     window.display();
 }

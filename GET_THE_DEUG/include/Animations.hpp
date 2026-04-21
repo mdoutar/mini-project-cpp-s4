@@ -6,6 +6,8 @@ class Animation
 
 private:
     float deltatime,totalTime,switchTime;
+    
+    int loopCounter; 
 
     sf::Vector2u imageCount;
     sf::Vector2u curImage;
@@ -13,8 +15,8 @@ private:
     public:
     sf::IntRect uvRect;
     Animation();
-    Animation(sf::Texture &texture ,sf::Vector2u imageCount,float switchTime);
-    void update(int row,float deltatime);
+    Animation(sf::Texture &texture ,sf::Vector2u imageCount,float switchTime );
+    void update(int row,float deltatime, bool looping= true);
 };
 
 

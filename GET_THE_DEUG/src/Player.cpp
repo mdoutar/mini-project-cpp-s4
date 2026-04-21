@@ -18,7 +18,7 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         }
         
         row=0;
-        animation = Animation(texture, sf::Vector2u(5, 3), 0.1f);
+        animation = Animation(texture, sf::Vector2u(5, 4), 0.1f);
         sprite.setTextureRect(animation.uvRect);
 
         sf::FloatRect bounds = sprite.getGlobalBounds();
@@ -100,36 +100,30 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     
     if(distanceBtwBoss <=1000.f && throwTimer>= throwInterval){
         canDefense = true;
-    }else{ canDefense=false;}
+    }else{
+         canDefense=false;
+    }
+     bool looping= true , isCrouching = false;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ) velocity.x -=speed ;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right) )velocity.x +=speed ; 
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||  sf::Keyboard::isKeyPressed(sf::Keyboard::W)) && canJump) {
         canJump = false;
         canCrouch =false;
         velocity.y = -sqrtf(2.f  * gravity * 150.f);
+        looping = false;
     }
-
-    float desiredWidth = 80.f;
-    float desiredHeight = 120.f;
-    float scaleX = desiredWidth / sprite.getLocalBounds().width;
-    float scaleY = desiredHeight / sprite.getLocalBounds().height;
-
+   
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) && canCrouch) {
-        sprite.setScale(rightFace ? scaleX : -scaleX, scaleY * 0.6f);
-      
-    } else {
-        sprite.setScale(rightFace ? scaleX : -scaleX, scaleY);
+        isCrouching= true;
+        looping = false;
+        velocity.x = 0.f;
     }
-    
 
-    if(velocity.x==0){
-        row = 0;
-    }
+
     
     velocity.y += gravity * deltaTime;
 
     if (velocity.x != 0.f) {
-        row=1;
         if (velocity.x > 0.0f) {
             rightFace = true;
         } else {
@@ -145,7 +139,23 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
         canJump = true;  
         canCrouch = true;
     }
-    if(!canJump) row=2;
+    
+    float desiredWidth = 80.f;
+    float desiredHeight = 120.f;
+    float scaleX = desiredWidth / sprite.getLocalBounds().width;
+    float scaleY = desiredHeight / sprite.getLocalBounds().height;
+    
+    if(!isCrouching){
+        sprite.setScale(rightFace ? scaleX : -scaleX, scaleY);
+    }else {
+        sprite.setScale(rightFace ? scaleX * 0.9f : -scaleX, scaleY * 0.9f);
+    }
+    
+
+    if (!canJump) { row = 2; }
+    else if (isCrouching) { row = 3; }
+    else if (velocity.x != 0.f) { row = 1; }
+    else { row = 0; }
 
     if (getPosition().x < 0.f) {
         setPosition(sf::Vector2f(0,getPosition().y));
@@ -158,11 +168,11 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     barPosition.y -= getBounds().getSize().y +30.f ; 
     healthBar.update(health, barPosition);
 
-    animation.update(row, deltaTime);
+    animation.update(row, deltaTime,looping);
     sprite.setTextureRect(animation.uvRect);
 }
 void Player::draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
-    healthBar.draw(window );
+    healthBar.draw(window);
 }

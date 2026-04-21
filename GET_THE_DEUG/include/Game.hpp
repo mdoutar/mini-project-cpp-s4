@@ -36,11 +36,13 @@ private:
     std::vector<float> reservedSpacesX;
 
     sf::Texture gameOverTex;
+    sf::Texture gameFinishedTex;
+    sf::Texture muteOnTex;
+    sf::Texture muteOffTex;
+    std::vector<sf::Texture> healsTex;
     std::vector<sf::Texture> bgTextures;
-     sf::Texture gameFinishedTex;
-     std::vector<sf::Texture> healsTex;
-    
-     sf::Font mainFont;
+     
+    sf::Font mainFont;
     sf::Clock clock;
     sf::RenderWindow window;
     
@@ -61,7 +63,7 @@ private:
      sf::RectangleShape background;
      sf::RectangleShape gameOver;
      sf::RectangleShape gameFinished;
-     sf::Text muteButton;
+     sf::Sprite muteButton;
 
      std::vector<sf::Texture>levelCompleteBgTex;
      std::vector<sf::RectangleShape> levelCompleteBg;
