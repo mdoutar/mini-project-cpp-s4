@@ -8,8 +8,8 @@ static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f;
 
 Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( 200, 300),boss( 200 ){
     window.setFramerateLimit(60);
-
-    
+    bool positionOccupied;
+    reservedSpacesX.reserve(15);
     if (  !bgMusic.openFromFile("../assets/background_theme.ogg") ) {
             std::cout << "ERROR: Could not load background music!\n";
     }else{
@@ -17,7 +17,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
             bgMusic.setVolume(50.f);
             bgMusic.play(); 
     }
-    if (  !bgMusic.openFromFile("../assets/fighting_theme.ogg") ) {
+    if (  !fightingMusic.openFromFile("../assets/fighting_theme.ogg") ) {
             std::cout << "ERROR: Could not load fighting music!\n";
     }else{
             fightingMusic.setLoop(true);
@@ -43,7 +43,7 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         gameFinished.setTexture(&gameFinishedTex);
         gameFinished.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
     }
-    obstacles.resize(4);
+        obstacles.resize(4);
         student.groundHeight = 500.f;
         student.setPosition(sf::Vector2f(100.f, student.groundHeight));
         student.earthWidth = background.getLocalBounds().width;
@@ -53,26 +53,49 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
 
         srand(static_cast<unsigned>(time(NULL)));
         obstaclesTex.resize(4);
+        float randX;
         for(int r =0;r<4;r++){
             obstaclesTex[r].resize(1);
             for(int c=0;c< obstaclesTex[r].size();c++){
             if (!obstaclesTex[r][c].loadFromFile("../assets/textures/obstacles/lvl" + std::to_string(r + 1) + "/obstacle"+std::to_string(c + 1)+  ".png")) {
                 std::cout << "Error loading obstacle " << r << c <<" texture!\n";
             }else{
-                float randX = rand() % (700 -200 + 1) + 200 ;
+                do{
+                    positionOccupied = false;
+                    randX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 1000) - 300 +1) + 300;
+                    for (float reservedSpace : reservedSpacesX){
+                    if (std::abs(randX - reservedSpace) < 10.f) {
+                        positionOccupied = true;
+                        break;
+                    }
+                }
+                }while(positionOccupied);
                 Obstacle obstacle(&obstaclesTex[r][c], sf::Vector2f(200.f,150.f ),sf::Vector2f(randX , student.groundHeight), 0, false, 0);
                 obstacles[r].push_back(obstacle);
+                reservedSpacesX.push_back(randX );
             }
         }
     }
+    float randHealPosX;
+    
     healsTex.resize(4);
     for(int i(0); i<healsTex.size() ;i++ ){
-        float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
         if (!healsTex[i].loadFromFile("../assets/textures/heals/heal"+std::to_string(i+1)+".png")) {
             std::cout << "ERROR: Could not load heal" << i+1 <<"texture!\n";
         }else{
+            do{
+                positionOccupied = false;
+                randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+                for (float reservedSpace : reservedSpacesX){
+                   if (std::abs(randHealPosX  - reservedSpace) < 10.f) {
+                    positionOccupied = true;
+                    break;
+                   }
+               }
+            }while(positionOccupied);
             Obstacle heal(&healsTex[i],sf::Vector2f(healsTex[i].getSize().x/2,healsTex[i].getSize().y/2),sf::Vector2f(randHealPosX,student.groundHeight), -150,false , 0 );
             heals.push_back(heal);
+            reservedSpacesX.push_back(randHealPosX) ;
         }
     }
     levelCompleteBg.resize(3);
@@ -102,21 +125,23 @@ void Game::processEvent(){
             view.resizeView(WINDOW_WIDTH, WINDOW_HEIGHT, window, view.view);
         }
         if (currentState == GameState::PLAYING) {
-            if( event.key.code == sf::Keyboard::Escape ) {
+            if (event.type == sf::Event::KeyPressed){
+
+                if( event.key.code == sf::Keyboard::Escape ) {
                     mainMenu.clickSound.play();
                     currentState= GameState::MENU;
                 }
-                else if( student.canDefense &&(event.key.code ==sf::Keyboard::E || event.mouseButton.button ==sf::Mouse::Right)){
+                else if( student.canDefense &&((event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) ||  (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right))){
                     student.defense(defenses ,float((5-currentLevel)*10) , currentLevel);
                 }
-                }
+            }
+        }
         else if (currentState == GameState::MENU) {
             
             if (event.type == sf::Event::MouseMoved) {
                 mainMenu.clickSound.play();
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 mainMenu.handleHover(mousePos);
-                break;
             }
 
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
@@ -146,8 +171,7 @@ void Game::processEvent(){
                 if (event.key.code == sf::Keyboard::Up ) mainMenu.moveUP();
                 else if (event.key.code == sf::Keyboard::Down) mainMenu.moveDOWN();
                 else if (event.key.code == sf::Keyboard::Escape) {
-                    // currentState = GameState::PLAYING;
-                    break;
+                    currentState = GameState::PLAYING;
                 }
                 else if (event.key.code == sf::Keyboard::Enter) {
                     int selected = mainMenu.getMenuPressed();
@@ -195,29 +219,50 @@ void Game::resetGame(){
     bossAttackes.clear();
     defenses.clear();
     // heals.clear();
-
-
+    reservedSpacesX.clear();
+    reservedSpacesX.reserve(15);
+    bool  positionOccupied;
+    float randHealPosX;
     for(int i(0); i < heals.size() ;i++ ){
-        float randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+          do{
+                positionOccupied = false;
+                randHealPosX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 500) - 300 +1) + 300;
+                for (float reservedSpace : reservedSpacesX){
+                   if (std::abs(randHealPosX  - reservedSpace) < 10.f) {
+                    positionOccupied = true;
+                    break;
+                   }
+               }
+            }while(positionOccupied);
         heals[i].isDestroyed = false;
         heals[i].obstacle.setPosition(sf::Vector2f(randHealPosX,student.groundHeight));
+        reservedSpacesX.push_back(randHealPosX );
     }
 
     int newBossHealth = float(100 + (currentLevel * 100));
     boss.healthBar.setMaxHealth(newBossHealth);
     boss.reset(newBossHealth);
-
+    float randX;
     for(int r(0); r<obstacles.size(); r++){
         for(int c(0) ; c<obstacles[r].size(); c++){
-            float randX = rand() % (700 -200 + 1) + 200 ;
+              do{
+                positionOccupied = false;
+                randX = rand() % ((static_cast<int>(background.getGlobalBounds().width) - 1000) - 300 +1) + 300;
+                for (float reservedSpace : reservedSpacesX){
+                   if (std::abs(randX - reservedSpace) < 10.f) {
+                    positionOccupied = true;
+                    break;
+                   }
+               }
+            }while(positionOccupied);
             obstacles[r][c].obstacle.setPosition(sf::Vector2f(randX , student.groundHeight));
+            reservedSpacesX.push_back(randX );
         }
     }
     
     student.reset(200.f,300);
     student.setPosition(sf::Vector2f(100.f, student.groundHeight));
     
-    render();
 };  
 
 void Game::run(){
@@ -263,7 +308,8 @@ void Game::update(){
                             optShake = 1.f; 
                         }
                 }
-        }
+            }
+        
             if (r >= 0 && r < heals.size()) {
                 Collider healCol = heals.at(r).getCollider();
                 if(!heals[r].isDestroyed && studentCol.checkCollider(healCol ,direction, 0.0f)){

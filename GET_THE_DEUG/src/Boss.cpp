@@ -20,7 +20,7 @@ Boss::Boss(   float startHealth):healthBar(startHealth) {
 
         
         
-        sf::FloatRect bounds = sprite.getLocalBounds();
+        sf::FloatRect bounds = getBounds();
         if (bounds.width > 0 && bounds.height > 0) {
             sprite.setScale( 80.f/bounds.width ,120.f/ bounds.height );
         }
@@ -70,8 +70,8 @@ sf::FloatRect Boss::getBounds() {
 }
 
 void Boss::attack(int level, std::vector<Obstacle>& attackes ) {
-    sf::Vector2f spawnPos = sprite.getPosition();
-    sf::FloatRect bounds = sprite.getLocalBounds();
+    sf::Vector2f spawnPos = getPosition();
+    sf::FloatRect bounds = getBounds();
     spawnPos.x -= bounds.width;
     throwTimer = 0;
     isAttacking = true;
@@ -106,12 +106,12 @@ void Boss::update(float deltaTime) {
     throwTimer += deltaTime;
     if (movingUp) {
         sprite.move(0.f, -speed * deltaTime);
-        if (sprite.getPosition().y < 350.f) { 
+        if (getPosition().y < 350.f) { 
             movingUp = false;
         }
     } else {
         sprite.move(0.f, speed * deltaTime);
-        if (sprite.getPosition().y > 450.f) {
+        if (getPosition().y > 450.f) {
             movingUp = true;  
         }
     }

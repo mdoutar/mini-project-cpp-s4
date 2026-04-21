@@ -51,6 +51,8 @@ public :
     std::vector<Obstacle> bossAttackes;
 
      
+    std::vector<float> reservedSpacesX;
+
      sf::RectangleShape background;
      sf::RectangleShape gameOver;
      std::vector<sf::Texture>levelCompleteBgTex;

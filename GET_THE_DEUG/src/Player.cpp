@@ -21,7 +21,7 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         animation = Animation(texture, sf::Vector2u(5, 3), 0.1f);
         sprite.setTextureRect(animation.uvRect);
 
-        sf::FloatRect bounds = sprite.getLocalBounds();
+        sf::FloatRect bounds = sprite.getGlobalBounds();
         //  if (bounds.width > 0 && bounds.height > 0) {
         //     sprite.setScale( 150.f/bounds.width ,150.f/ bounds.height );
         // }
@@ -138,21 +138,21 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
 
     sprite.move(velocity * deltaTime);
 
-    if (sprite.getPosition().y >= groundHeight) {
-        sprite.setPosition(sprite.getPosition().x, groundHeight);
+    if (getPosition().y >= groundHeight) {
+        sprite.setPosition(getPosition().x, groundHeight);
         velocity.y = 0.f;
         canJump = true;  
         canCrouch = true;
     }
     if(!canJump) row=2;
 
-    if (sprite.getPosition().x < 0.f) {
-        setPosition(sf::Vector2f(0,sprite.getPosition().y));
-    }else if (sprite.getPosition().x > earthWidth ) {
-        setPosition(sf::Vector2f(earthWidth,sprite.getPosition().y));
+    if (getPosition().x < 0.f) {
+        setPosition(sf::Vector2f(0,getPosition().y));
+    }else if (getPosition().x > earthWidth ) {
+        setPosition(sf::Vector2f(earthWidth,getPosition().y));
     }
 
-    sf::Vector2f barPosition = sprite.getPosition();
+    sf::Vector2f barPosition = getPosition();
     barPosition.x -= getBounds().width / 2  ; 
     barPosition.y -= getBounds().getSize().y +30.f ; 
     healthBar.update(health, barPosition);
@@ -160,7 +160,6 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     animation.update(row, deltaTime);
     sprite.setTextureRect(animation.uvRect);
 }
-
 void Player::draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
