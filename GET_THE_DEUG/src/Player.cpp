@@ -110,12 +110,10 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
         canJump = false;
         canCrouch =false;
         velocity.y = -sqrtf(2.f  * gravity * 150.f);
-        looping = false;
     }
    
     if((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) && canCrouch) {
         isCrouching= true;
-        looping = false;
         velocity.x = 0.f;
     }
 
@@ -152,8 +150,14 @@ void Player::update(float deltaTime, sf::Vector2f bossPos){
     }
     
 
-    if (!canJump) { row = 2; }
-    else if (isCrouching) { row = 3; }
+    if (!canJump) { 
+        row = 2;
+        looping = false;
+    }
+    else if (isCrouching) { 
+        row = 3;
+        looping= false;
+    }
     else if (velocity.x != 0.f) { row = 1; }
     else { row = 0; }
 
