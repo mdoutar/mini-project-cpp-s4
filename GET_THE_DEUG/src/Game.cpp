@@ -149,13 +149,12 @@ void Game::processEvent(){
         else if (currentState == GameState::MENU) {
             
             if (event.type == sf::Event::MouseMoved) {
-                mainMenu.clickSound.play();
+                // mainMenu.clickSound.play();
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 mainMenu.handleHover(mousePos);
             }
 
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-                mainMenu.clickSound.play();
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 int clickedItem = mainMenu.checkMouseClick(mousePos);
                 
@@ -218,7 +217,6 @@ void Game::processEvent(){
         }
     }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-        mainMenu.clickSound.play();
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         if (muteButton.getGlobalBounds().contains(mousePos)) {
             muted =!muted;

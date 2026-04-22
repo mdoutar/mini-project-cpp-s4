@@ -15,7 +15,7 @@ MenuOptions[0] = "Play";
         }
         menuBg.setSize(dimension);
 
-    if (!clickBuffer.loadFromFile("../assets/click.wav")) {
+    if (!clickBuffer.loadFromFile("../assets/audios/mouse-click.mp3")) {
             std::cout << "ERROR: Could not load click sound!\n";
         }
 
