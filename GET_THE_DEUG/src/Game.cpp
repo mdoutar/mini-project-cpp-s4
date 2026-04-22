@@ -2,7 +2,7 @@
 #include <cstdlib> 
 #include <ctime>   
 
-static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f, MUSIC_VOLUME = 10.f,STUDENT_HEALTH = 200.f ,STUDENT_STARTED_POSX =100.f , DISTANCE_BTN_OBTSCLS = 50.F ;
+static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f, MUSIC_VOLUME = 20.f,STUDENT_HEALTH = 200.f ,STUDENT_STARTED_POSX =100.f , DISTANCE_BTN_OBTSCLS = 50.F ;
 static const int   STUDENT_SPEED =300, BOSS_STARTED_HEALTH = 200; 
 
 
@@ -44,14 +44,14 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
         gameFinished.setTexture(&gameFinishedTex);
         gameFinished.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
     }
+    student.groundHeight = 500.f;
+    student.setPosition(sf::Vector2f(STUDENT_STARTED_POSX, student.groundHeight));
+    student.earthWidth = background.getLocalBounds().width;
+    
+    boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
+    
+    
         obstacles.resize(4);
-        student.groundHeight = 500.f;
-        student.setPosition(sf::Vector2f(STUDENT_STARTED_POSX, student.groundHeight));
-        student.earthWidth = background.getLocalBounds().width;
-
-        boss.setPosition(sf::Vector2f(background.getSize().x - 200.f,student.groundHeight));
-        
-
         srand(static_cast<unsigned>(time(NULL)));
         obstaclesTex.resize(4);
         float randX;
