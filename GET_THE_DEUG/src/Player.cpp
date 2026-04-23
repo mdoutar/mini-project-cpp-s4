@@ -21,10 +21,7 @@ Player::Player(float health , int speed):gravity(981.f),health(health) , speed(s
         animation = Animation(texture, sf::Vector2u(5, 4), 0.1f);
         sprite.setTextureRect(animation.uvRect);
 
-        sf::FloatRect bounds = sprite.getGlobalBounds();
-        //  if (bounds.width > 0 && bounds.height > 0) {
-        //     sprite.setScale( 150.f/bounds.width ,150.f/ bounds.height );
-        // }
+        sf::FloatRect bounds = sprite.getLocalBounds();
         sprite.setOrigin(bounds.width / 2.f, bounds.height);
     }catch(const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
@@ -77,10 +74,17 @@ void Player::takeDamage(float damage) {
     healthBar.setHealth(health);
 }
 void Player::defense( std::vector<Obstacle>& defenses , float damage,int level ){
-    if(canDefense){
+    if(canDefense ){
         sf::Vector2f position = sprite.getPosition();
-        // set player damage *10 just for testing the levels fast
-        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(150.f,150.f),position,damage * 10,true,rightFace?-1000:1000);
+        sf::FloatRect bounds = getBounds();
+
+        float spawnY = position.y ;
+        
+        float spawnX = position.x + (rightFace ? 40.f : -40.f);
+        
+        sf::Vector2f spawnPos(spawnX, spawnY);
+        // set player damage *5 just for testing the levels fast
+        Obstacle _defense(&defensesTex[level-1],sf::Vector2f(150.f,150.f),spawnPos,damage * 5,true,rightFace?-1000:1000);
         defenses.push_back(_defense);
         throwTimer = 0.f;
         canDefense =false;
