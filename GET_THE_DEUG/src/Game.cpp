@@ -176,7 +176,6 @@ void Game::processEvent(){
             }
 
             if (event.type == sf::Event::KeyPressed) {
-                mainMenu.clickSound.play();
                 if (event.key.code == sf::Keyboard::Up ) mainMenu.moveUP();
                 else if (event.key.code == sf::Keyboard::Down) mainMenu.moveDOWN();
                 else if (event.key.code == sf::Keyboard::Escape) {
