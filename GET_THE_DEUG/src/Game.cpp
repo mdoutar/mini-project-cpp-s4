@@ -362,7 +362,7 @@ void Game::update(){
                                 }
                             }
                         }
-            if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(attackCol, direction, 0.0f)) {
+            if (!bossAttackes[i].isDestroyed && studentCol.checkCollider(attackCol, direction, 1.f)) {
                 bossAttackes[i].destroyObstacle();
                 student.takeDamage(bossAttackes[i].damage*currentLevel+10);
                 // shakeTime = 0.3f;

@@ -26,7 +26,7 @@ bool canCrouch;
 bool canJump;
 int row;
 float throwTimer = 0.f;
-float throwInterval = .7f;
+float throwInterval = .3f;
 float earthWidth;
 float groundHeight;
 
