@@ -13,7 +13,7 @@
 #include "Player.hpp"
 #include "Boss.hpp"
 #include "Obstacle.hpp"
-#include <vector>
+#include "Model.hpp"
 
 enum class GameState {
     MENU,
@@ -71,11 +71,12 @@ private:
      sf::Music bgMusic;
      sf::Music fightingMusic;
      
+
      ContView view;
      Player student;
      Boss boss;
      Menu mainMenu;
-    
+    Model controlModel;
      
 
      

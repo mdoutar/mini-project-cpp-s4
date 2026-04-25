@@ -6,7 +6,8 @@ static const float WINDOW_WIDTH = 800.f , WINDOW_HEIGHT=600.f, MUSIC_VOLUME = 20
 static const int   STUDENT_SPEED =300, BOSS_STARTED_HEALTH = 200; 
 
 
-Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( STUDENT_HEALTH,STUDENT_SPEED),boss( BOSS_STARTED_HEALTH   ){
+
+Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" , sf::Style::Close |sf::Style::Resize )   , mainMenu(sf::Vector2f(WINDOW_WIDTH,WINDOW_HEIGHT)),view(sf::Vector2f(WINDOW_WIDTH , WINDOW_HEIGHT) ) ,student( STUDENT_HEALTH,STUDENT_SPEED),boss( BOSS_STARTED_HEALTH   ) , controlModel("A->left \n D->right \n W->jump \n S->crouch \nE->attack \n A->left arrow \n D->right arrow \n top arrow->jump \n bottom arrow->crouch \n right click-> attack"){
     window.setFramerateLimit(60);
     bool positionOccupied;
     reservedSpacesX.reserve(15);
@@ -119,6 +120,8 @@ Game::Game( ): window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT) ,"GET THE DEUG" 
     }
     muteButton.setTexture(muteOnTex);
     muteButton.setPosition(sf::Vector2f(10.f,50.f));
+    
+    controlModel.setPostion(sf::Vector2f(100.f,50.f));
 }
 
 
@@ -170,6 +173,9 @@ void Game::processEvent(){
                     currentState = GameState::PLAYING;
                 }
                 else if (clickedItem == 2) { 
+                    controlModel.open = true;
+                }
+                else if (clickedItem == 3) { 
                     window.close();
                 }
                 break;
@@ -178,9 +184,14 @@ void Game::processEvent(){
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Up ) mainMenu.moveUP();
                 else if (event.key.code == sf::Keyboard::Down) mainMenu.moveDOWN();
-                else if (event.key.code == sf::Keyboard::Escape) {
+                else if (event.key.code == sf::Keyboard::Escape && !controlModel.open) {
                     currentState = GameState::PLAYING;
+                    controlModel.open = false;
+                }else if (event.key.code == sf::Keyboard::Escape && controlModel.open) {
+                    currentState = GameState::MENU;
+                    controlModel.open = false;
                 }
+                
                 else if (event.key.code == sf::Keyboard::Enter) {
                     int selected = mainMenu.getMenuPressed();
                     if(selected==0 ){
@@ -191,7 +202,8 @@ void Game::processEvent(){
                         resetGame();
                         currentState = GameState::PLAYING;
                     }
-                    else if (selected == 2) window.close();
+                    else if (selected == 2) controlModel.open =true;
+                    else if (selected == 3) window.close();
                 }
             }
         }
@@ -519,8 +531,12 @@ void Game::render() {
             window.draw(gameFinished);
         }
         window.setView(window.getDefaultView());
-    window.draw(muteButton);
+    if(controlModel.open){
+        controlModel.draw(window);
+    }
+        window.draw(muteButton);
     window.display();
+
 }
 
 void Game::shakeView(){

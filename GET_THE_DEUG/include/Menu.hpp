@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-static const int MAXSIZE = 3;
+static const int MAXSIZE = 4;
 
 
 class Menu

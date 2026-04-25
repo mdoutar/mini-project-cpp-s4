@@ -5,7 +5,8 @@
 Menu::Menu(sf::Vector2f dimension){
 MenuOptions[0] = "Play";
     MenuOptions[1] = "Restart";
-    MenuOptions[2] = "Quit";
+    MenuOptions[2] = "Control";
+    MenuOptions[3] = "Quit";
 
             if(!menuTex.loadFromFile("../assets/textures/menuBg.png")){
             std::cout << "ERROR: Could not load menu background texture!\n";
