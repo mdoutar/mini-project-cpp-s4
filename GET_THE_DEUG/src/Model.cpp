@@ -5,10 +5,10 @@ Model::Model(){}
 
 Model::Model(sf::String cont){
     if(!bgTex.loadFromFile("../assets/textures/modelbg.png")){
-         std::cout << "Texture of model background not found !!";
+         std::cout << "Texture of model background not found !!" <<std::endl;
     }
     if(!textFont.loadFromFile("../assets/fonts/OpenSans-Bold.ttf")){
-         std::cout << "Font of model not found !!";
+         std::cout << "Font of model not found !!" <<std::endl;
     }
     modelBg.setTexture(bgTex);
 
